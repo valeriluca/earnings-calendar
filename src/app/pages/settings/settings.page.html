@@ -10,7 +10,7 @@
   <div class="p-6 max-w-4xl mx-auto space-y-6">
     
     <!-- Notifications Section -->
-    <div class="bg-[#1a1a1d] rounded-lg p-6 shadow-lg">
+    <div class="bg-[#2C2C2E] rounded-lg p-8 shadow-lg">
       <div class="flex items-center gap-3 mb-4">
         <p-icon [name]="'information'" [size]="'medium'" [theme]="'dark'"></p-icon>
         <p-heading [size]="'large'" [theme]="'dark'">Notifications</p-heading>
@@ -26,8 +26,8 @@
           </p-switch>
         </div>
 
-        <div *ngIf="notificationSettings.enabled" class="pt-2 border-t border-[#323236]">
-          <p-text [size]="'small'" [theme]="'dark'" class="block mb-2 text-[#86868d]">Notification Time</p-text>
+        <div *ngIf="notificationSettings.enabled" class="pt-2 border-t border-[#3A3A3C]">
+          <p-text [size]="'small'" [theme]="'dark'" class="block mb-2 text-[#C9C9CB]" style="padding: 4px 0;">Notification Time</p-text>
           <ion-input
             type="time"
             [value]="notificationSettings.notificationTime"
@@ -47,13 +47,13 @@
         </div>
       </div>
 
-      <p-text [size]="'x-small'" [theme]="'dark'" class="block mt-4 text-[#86868d]">
+      <p-text [size]="'x-small'" [theme]="'dark'" class="block mt-4 text-[#C9C9CB]" style="padding: 4px 0; line-height: 1.6;">
         <strong>Note:</strong> Notifications work best on native apps. Web app notifications have limited support on mobile browsers.
       </p-text>
     </div>
 
     <!-- Watchlist Section -->
-    <div class="bg-[#1a1a1d] rounded-lg p-6 shadow-lg">
+    <div class="bg-[#2C2C2E] rounded-lg p-8 shadow-lg">
       <div class="flex items-center gap-3 mb-4">
         <p-icon [name]="'menu-lines'" [size]="'medium'" [theme]="'dark'"></p-icon>
         <p-heading [size]="'large'" [theme]="'dark'">Stock Watchlist</p-heading>
@@ -61,7 +61,7 @@
 
       <!-- Add Stock -->
       <div class="mb-4">
-        <p-text [size]="'small'" [theme]="'dark'" class="block mb-2 text-[#86868d]">Add Stock Symbol</p-text>
+        <p-text [size]="'small'" [theme]="'dark'" class="block mb-2 text-[#C9C9CB]" style="padding: 4px 0;">Add Stock Symbol</p-text>
         <div class="flex gap-2">
           <ion-searchbar
             [(ngModel)]="newSymbol"
@@ -101,7 +101,7 @@
         </p-tag>
         
         <div *ngIf="watchlist.length === 0" class="w-full text-center py-8">
-          <p-text [size]="'medium'" [theme]="'dark'" class="text-[#86868d]">
+          <p-text [size]="'medium'" [theme]="'dark'" class="text-[#C9C9CB]" style="padding: 4px 0;">
             No stocks in watchlist. Add some symbols above!
           </p-text>
         </div>
@@ -116,20 +116,20 @@
         Reset to Defaults
       </p-button>
 
-      <p-text [size]="'x-small'" [theme]="'dark'" class="block mt-4 text-[#86868d]">
+      <p-text [size]="'x-small'" [theme]="'dark'" class="block mt-4 text-[#C9C9CB]" style="padding: 4px 0; line-height: 1.6;">
         Tap the × button on a stock chip to remove it from your watchlist.
       </p-text>
     </div>
 
     <!-- App Info -->
-    <div class="bg-[#1a1a1d] rounded-lg p-6 shadow-lg">
-      <p-heading [size]="'large'" [theme]="'dark'" class="mb-4">About</p-heading>
+    <div class="bg-[#2C2C2E] rounded-lg p-8 shadow-lg">
+      <p-heading [size]="'large'" [theme]="'dark'" class="mb-4" style="padding: 4px 0;">About</p-heading>
       <div class="space-y-2">
-        <p-text [size]="'medium'" [theme]="'dark'"><strong>Earnings Calendar</strong></p-text>
-        <p-text [size]="'small'" [theme]="'dark'" class="text-[#86868d]">Version 1.0.0</p-text>
-        <p-text [size]="'small'" [theme]="'dark'" class="text-[#86868d]">Built with Ionic + Angular</p-text>
-        <p-text [size]="'small'" [theme]="'dark'" class="text-[#86868d]">Data from Financial Modeling Prep API</p-text>
-        <p-text [size]="'small'" [theme]="'dark'" class="text-[#86868d]">Design by Porsche Design System</p-text>
+        <p-text [size]="'medium'" [theme]="'dark'" style="padding: 4px 0;"><strong>Earnings Calendar</strong></p-text>
+        <p-text [size]="'small'" [theme]="'dark'" class="text-[#C9C9CB]" style="padding: 4px 0;">Version 1.0.0</p-text>
+        <p-text [size]="'small'" [theme]="'dark'" class="text-[#C9C9CB]" style="padding: 4px 0;">Built with Ionic + Angular</p-text>
+        <p-text [size]="'small'" [theme]="'dark'" class="text-[#C9C9CB]" style="padding: 4px 0;">Data from Financial Modeling Prep API</p-text>
+        <p-text [size]="'small'" [theme]="'dark'" class="text-[#C9C9CB]" style="padding: 4px 0;">Design by Porsche Design System</p-text>
       </div>
     </div>
 

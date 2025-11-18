@@ -42,30 +42,30 @@
  * -----------------------------------------------------
  */
 body {
-	background-color: #0e0e10;
-	color: #e4e4e6;
+	background-color: #1C1C1E;
+	color: #E5E5E5;
 }
 
 ion-content {
-	--background: #0e0e10;
-	--color: #e4e4e6;
+	--background: #1C1C1E;
+	--color: #E5E5E5;
 }
 
 ion-toolbar {
-	--background: #1a1a1d;
-	--color: #e4e4e6;
+	--background: #2C2C2E;
+	--color: #E5E5E5;
 }
 
 ion-card {
-	--background: #1a1a1d;
-	--color: #e4e4e6;
+	--background: #2C2C2E;
+	--color: #E5E5E5;
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 ion-item {
-	--background: #1a1a1d;
-	--color: #e4e4e6;
-	--border-color: #323236;
+	--background: #2C2C2E;
+	--color: #E5E5E5;
+	--border-color: #3A3A3C;
 }
 
 ion-list {
@@ -81,40 +81,40 @@ p-heading {
 	color: #e4e4e6;
 }
 
-// FullCalendar dark theme
+// FullCalendar dark theme with bordeaux red accents
 .fc {
-	--fc-border-color: #323236;
-	--fc-button-bg-color: #d5001c;
-	--fc-button-border-color: #d5001c;
-	--fc-button-hover-bg-color: #bb0019;
-	--fc-button-hover-border-color: #bb0019;
-	--fc-button-active-bg-color: #a30016;
-	--fc-button-active-border-color: #a30016;
-	--fc-event-bg-color: #d5001c;
-	--fc-event-border-color: #d5001c;
-	--fc-neutral-bg-color: #1a1a1d;
-	--fc-page-bg-color: #0e0e10;
-	color: #e4e4e6;
+	--fc-border-color: #3A3A3C;
+	--fc-button-bg-color: #8B1538;
+	--fc-button-border-color: #8B1538;
+	--fc-button-hover-bg-color: #9F2D4C;
+	--fc-button-hover-border-color: #9F2D4C;
+	--fc-button-active-bg-color: #721230;
+	--fc-button-active-border-color: #721230;
+	--fc-event-bg-color: #8B1538;
+	--fc-event-border-color: #8B1538;
+	--fc-neutral-bg-color: #2C2C2E;
+	--fc-page-bg-color: #1C1C1E;
+	color: #E5E5E5;
 }
 
 .fc-theme-standard td,
 .fc-theme-standard th {
-	border-color: #323236;
+	border-color: #3A3A3C;
 }
 
 .fc-col-header-cell {
-	background: #1a1a1d;
-	color: #e4e4e6;
+	background: #2C2C2E;
+	color: #E5E5E5;
 }
 
 .fc-daygrid-day {
-	background: #0e0e10;
+	background: #1C1C1E;
 	
 	&.fc-day-today {
-		background-color: rgba(213, 0, 28, 0.1);
+		background-color: rgba(139, 21, 56, 0.15);
 	}
 }
 
 .fc-daygrid-day-number {
-	color: #e4e4e6;
+	color: #E5E5E5;
 }

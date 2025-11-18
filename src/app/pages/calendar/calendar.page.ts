@@ -143,10 +143,10 @@ export class CalendarPage implements OnInit {
 
   getColorForTime(time: string | null): string {
     switch (time) {
-      case 'bmo': return '#3880ff';
-      case 'amc': return '#2dd36f';
-      case 'dmt': return '#ffc409';
-      default: return '#92949c';
+      case 'bmo': return '#A31E39';      // Bright bordeaux red
+      case 'amc': return '#6B7280';      // Medium grey
+      case 'dmt': return '#D94A6A';      // Light rose/pink
+      default: return '#4B5563';         // Dark grey
     }
   }
 

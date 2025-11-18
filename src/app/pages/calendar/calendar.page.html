@@ -37,40 +37,40 @@
     <!-- Calendar View -->
     <div *ngIf="!loading && !error" class="space-y-6">
       <!-- Header Card -->
-      <div class="bg-[#1a1a1d] rounded-lg p-6 shadow-lg">
+      <div class="bg-[#2C2C2E] rounded-lg p-6 shadow-lg">
         <p-heading [size]="'x-large'" [theme]="'dark'" class="mb-2">
           Upcoming Earnings
         </p-heading>
-        <p-text [size]="'medium'" [theme]="'dark'" class="text-[#86868d]">
+        <p-text [size]="'medium'" [theme]="'dark'" class="text-[#C9C9CB]">
           Track earnings announcements for your watchlist stocks
         </p-text>
       </div>
 
       <!-- Calendar Container -->
-      <div class="bg-[#1a1a1d] rounded-lg p-6 shadow-lg">
+      <div class="bg-[#2C2C2E] rounded-lg p-6 shadow-lg">
         <full-calendar [options]="calendarOptions"></full-calendar>
       </div>
       
       <!-- Legend Card -->
-      <div class="bg-[#1a1a1d] rounded-lg p-6 shadow-lg">
+      <div class="bg-[#2C2C2E] rounded-lg p-6 shadow-lg">
         <p-heading [size]="'large'" [theme]="'dark'" class="mb-4">
           Legend
         </p-heading>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div class="flex items-center gap-3">
-            <div class="w-4 h-4 rounded" style="background-color: #3880ff;"></div>
+            <div class="w-4 h-4 rounded" style="background-color: #A31E39;"></div>
             <p-text [size]="'small'" [theme]="'dark'">Before Market Open (BMO)</p-text>
           </div>
           <div class="flex items-center gap-3">
-            <div class="w-4 h-4 rounded" style="background-color: #2dd36f;"></div>
+            <div class="w-4 h-4 rounded" style="background-color: #6B7280;"></div>
             <p-text [size]="'small'" [theme]="'dark'">After Market Close (AMC)</p-text>
           </div>
           <div class="flex items-center gap-3">
-            <div class="w-4 h-4 rounded" style="background-color: #ffc409;"></div>
+            <div class="w-4 h-4 rounded" style="background-color: #D94A6A;"></div>
             <p-text [size]="'small'" [theme]="'dark'">During Market Time (DMT)</p-text>
           </div>
           <div class="flex items-center gap-3">
-            <div class="w-4 h-4 rounded" style="background-color: #92949c;"></div>
+            <div class="w-4 h-4 rounded" style="background-color: #4B5563;"></div>
             <p-text [size]="'small'" [theme]="'dark'">Time TBD</p-text>
           </div>
         </div>
@@ -96,73 +96,73 @@
       <ion-content class="ion-padding">
         <div *ngIf="selectedEvent" class="space-y-6">
           <!-- Company Info -->
-          <div class="bg-[#1a1a1d] rounded-lg p-6 shadow-lg">
-            <p-heading [size]="'large'" [theme]="'dark'" class="mb-2">
+          <div class="bg-[#2C2C2E] rounded-lg p-8 shadow-lg">
+            <p-heading [size]="'large'" [theme]="'dark'" class="mb-2" style="padding: 4px 0;">
               {{ selectedEvent.title }}
             </p-heading>
-            <p-text [size]="'medium'" [theme]="'dark'" class="text-[#86868d]">
+            <p-text [size]="'medium'" [theme]="'dark'" class="text-[#C9C9CB]" style="padding: 4px 0;">
               {{ selectedEvent.symbol }}
             </p-text>
           </div>
 
           <!-- Date & Time Info -->
-          <div class="bg-[#1a1a1d] rounded-lg p-6 shadow-lg space-y-4">
-            <div>
-              <p-text [size]="'small'" [theme]="'dark'" class="block mb-1 text-[#86868d]">
+          <div class="bg-[#2C2C2E] rounded-lg p-8 shadow-lg space-y-4">
+            <div style="margin-bottom: 16px;">
+              <p-text [size]="'small'" [theme]="'dark'" class="block mb-1 text-[#C9C9CB]" style="padding: 4px 0;">
                 Date
               </p-text>
-              <p-text [size]="'medium'" [theme]="'dark'">
+              <p-text [size]="'medium'" [theme]="'dark'" style="padding: 4px 0;">
                 {{ formatModalDate(selectedEvent.date) }}
               </p-text>
             </div>
 
-            <div>
-              <p-text [size]="'small'" [theme]="'dark'" class="block mb-1 text-[#86868d]">
+            <div style="margin-bottom: 16px;">
+              <p-text [size]="'small'" [theme]="'dark'" class="block mb-1 text-[#C9C9CB]" style="padding: 4px 0;">
                 Reporting Time
               </p-text>
-              <p-text [size]="'medium'" [theme]="'dark'">
+              <p-text [size]="'medium'" [theme]="'dark'" style="padding: 4px 0;">
                 {{ selectedEvent.timeLabel }}
               </p-text>
             </div>
 
             <div>
-              <p-text [size]="'small'" [theme]="'dark'" class="block mb-1 text-[#86868d]">
+              <p-text [size]="'small'" [theme]="'dark'" class="block mb-1 text-[#C9C9CB]" style="padding: 4px 0;">
                 Berlin Time (Approximate)
               </p-text>
-              <p-text [size]="'medium'" [theme]="'dark'" class="font-semibold">
+              <p-text [size]="'medium'" [theme]="'dark'" class="font-semibold" style="padding: 4px 0;">
                 {{ selectedEvent.berlinTime }}
               </p-text>
             </div>
           </div>
 
           <!-- Financial Estimates -->
-          <div *ngIf="selectedEvent.epsEstimated || selectedEvent.eps" class="bg-[#1a1a1d] rounded-lg p-6 shadow-lg space-y-4">
-            <p-heading [size]="'medium'" [theme]="'dark'" class="mb-3">
+          <div *ngIf="selectedEvent.epsEstimated || selectedEvent.eps" class="bg-[#2C2C2E] rounded-lg p-8 shadow-lg space-y-4">
+            <p-heading [size]="'medium'" [theme]="'dark'" class="mb-3" style="padding: 4px 0;">
               Financial Data
             </p-heading>
 
-            <div *ngIf="selectedEvent.epsEstimated">
-              <p-text [size]="'small'" [theme]="'dark'" class="block mb-1 text-[#86868d]">
+            <div *ngIf="selectedEvent.epsEstimated" style="margin-bottom: 16px;">
+              <p-text [size]="'small'" [theme]="'dark'" class="block mb-1 text-[#C9C9CB]" style="padding: 4px 0;">
                 EPS Estimate
               </p-text>
-              <p-text [size]="'medium'" [theme]="'dark'">
+              <p-text [size]="'medium'" [theme]="'dark'" style="padding: 4px 0;">
                 ${{ selectedEvent.epsEstimated }}
               </p-text>
             </div>
 
             <div *ngIf="selectedEvent.eps">
-              <p-text [size]="'small'" [theme]="'dark'" class="block mb-1 text-[#86868d]">
+              <p-text [size]="'small'" [theme]="'dark'" class="block mb-1 text-[#C9C9CB]" style="padding: 4px 0;">
                 Previous EPS
               </p-text>
-              <p-text [size]="'medium'" [theme]="'dark'">
+              <p-text [size]="'medium'" [theme]="'dark'" style="padding: 4px 0;">
                 ${{ selectedEvent.eps }}
               </p-text>
             </div>
           </div>
 
           <!-- Info Note -->
-          <div class="bg-[#1a1a1d] rounded-lg p-4 shadow-lg">
-            <p-text [size]="'x-small'" [theme]="'dark'" class="text-[#86868d]">
+          <div class="bg-[#2C2C2E] rounded-lg p-6 shadow-lg">
+            <p-text [size]="'x-small'" [theme]="'dark'" class="text-[#C9C9CB]" style="padding: 4px 0; line-height: 1.6;">
               <strong>Note:</strong> Berlin times are approximate and based on standard US market hours. 
               Actual earnings release times may vary. CET/CEST adjusts for daylight saving time.
             </p-text>
