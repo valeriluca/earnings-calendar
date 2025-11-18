@@ -1,18 +1,18 @@
 <ion-tabs>
-  <ion-tab-bar slot="bottom">
-    <ion-tab-button tab="calendar">
-      <ion-icon name="calendar-outline"></ion-icon>
-      <ion-label>Calendar</ion-label>
+  <ion-tab-bar slot="bottom" class="porsche-tab-bar">
+    <ion-tab-button tab="calendar" class="porsche-tab-button">
+      <p-icon [name]="'calendar'" [size]="'small'"></p-icon>
+      <p-text [size]="'x-small'" [theme]="'dark'">Calendar</p-text>
     </ion-tab-button>
 
-    <ion-tab-button tab="list">
-      <ion-icon name="list-outline"></ion-icon>
-      <ion-label>List</ion-label>
+    <ion-tab-button tab="list" class="porsche-tab-button">
+      <p-icon [name]="'menu-lines'" [size]="'small'"></p-icon>
+      <p-text [size]="'x-small'" [theme]="'dark'">List</p-text>
     </ion-tab-button>
 
-    <ion-tab-button tab="settings">
-      <ion-icon name="settings-outline"></ion-icon>
-      <ion-label>Settings</ion-label>
+    <ion-tab-button tab="settings" class="porsche-tab-button">
+      <p-icon [name]="'configurate'" [size]="'small'"></p-icon>
+      <p-text [size]="'x-small'" [theme]="'dark'">Settings</p-text>
     </ion-tab-button>
   </ion-tab-bar>
 </ion-tabs>

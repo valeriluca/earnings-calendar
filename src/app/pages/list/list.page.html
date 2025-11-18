@@ -1,27 +1,23 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>Earnings List</ion-title>
+    <ion-title>
+      <p-heading [size]="'large'" [theme]="'dark'">Earnings List</p-heading>
+    </ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="loadEarnings()">
-        <ion-icon name="refresh-outline"></ion-icon>
-      </ion-button>
-      <ion-button (click)="navigateToSettings()">
-        <ion-icon name="settings-outline"></ion-icon>
-      </ion-button>
+      <p-button-pure [icon]="'reset'" (click)="loadEarnings()" [hideLabel]="true" [theme]="'dark'">
+        Refresh
+      </p-button-pure>
+      <p-button-pure [icon]="'configurate'" (click)="navigateToSettings()" [hideLabel]="true" [theme]="'dark'">
+        Settings
+      </p-button-pure>
     </ion-buttons>
   </ion-toolbar>
   <ion-toolbar>
-    <ion-segment [(ngModel)]="selectedFilter" (ionChange)="onFilterChange($event)">
-      <ion-segment-button value="all">
-        <ion-label>All</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="today">
-        <ion-label>Today</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="week">
-        <ion-label>This Week</ion-label>
-      </ion-segment-button>
-    </ion-segment>
+    <p-segmented-control [value]="selectedFilter" (update)="onFilterChange($event)" [theme]="'dark'">
+      <p-segmented-control-item [value]="'all'">All</p-segmented-control-item>
+      <p-segmented-control-item [value]="'today'">Today</p-segmented-control-item>
+      <p-segmented-control-item [value]="'week'">This Week</p-segmented-control-item>
+    </p-segmented-control>
   </ion-toolbar>
 </ion-header>
 
@@ -30,39 +26,58 @@
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
-  <div *ngIf="loading" class="loading-container">
-    <ion-spinner name="crescent"></ion-spinner>
-    <p>Loading earnings...</p>
-  </div>
+  <div class="p-6">
+    <!-- Loading State -->
+    <div *ngIf="loading" class="flex flex-col items-center justify-center min-h-[400px] gap-4">
+      <p-spinner [size]="'large'" [theme]="'dark'"></p-spinner>
+      <p-text [size]="'medium'" [theme]="'dark'" class="text-[#86868d]">Loading earnings...</p-text>
+    </div>
 
-  <div *ngIf="error && !loading" class="error-container">
-    <p>{{ error }}</p>
-    <ion-button (click)="loadEarnings()" size="small">Retry</ion-button>
-  </div>
+    <!-- Error State -->
+    <div *ngIf="error && !loading" class="flex flex-col items-center justify-center min-h-[400px] gap-4">
+      <p-text [size]="'large'" [theme]="'dark'" class="text-[#d5001c]">{{ error }}</p-text>
+      <p-button (click)="loadEarnings()" [variant]="'secondary'" [theme]="'dark'">
+        Retry
+      </p-button>
+    </div>
 
-  <ion-list *ngIf="!loading && !error && filteredEarnings.length > 0">
-    <ion-item *ngFor="let event of filteredEarnings" [class.today-item]="isToday(event.date)">
-      <ion-label>
-        <h2>
-          {{ event.symbol }}
-          <ion-badge *ngIf="isToday(event.date)" color="primary" style="margin-left: 8px;">TODAY</ion-badge>
-        </h2>
-        <p>{{ formatDisplayDate(event.date) }}</p>
-        <p>{{ getTimeInfo(event).label }}</p>
-        <p *ngIf="event.epsEstimated" class="eps-info">
-          EPS Est: {{ event.epsEstimated }}
-        </p>
-      </ion-label>
-      <ion-badge slot="end" [color]="getTimeInfo(event).color">
-        {{ event.time || '?' }}
-      </ion-badge>
-    </ion-item>
-  </ion-list>
+    <!-- Earnings List -->
+    <div *ngIf="!loading && !error && filteredEarnings.length > 0" class="space-y-3">
+      <div *ngFor="let event of filteredEarnings" 
+           class="bg-[#1a1a1d] rounded-lg p-4 shadow-lg hover:bg-[#262629] transition-colors"
+           [class.border-l-4]="isToday(event.date)"
+           [class.border-[#d5001c]]="isToday(event.date)">
+        <div class="flex justify-between items-start">
+          <div class="flex-1">
+            <div class="flex items-center gap-2 mb-2">
+              <p-heading [size]="'medium'" [theme]="'dark'">{{ event.name || event.symbol }}</p-heading>
+              <p-tag *ngIf="isToday(event.date)" [color]="'notification-error'" [theme]="'dark'">TODAY</p-tag>
+            </div>
+            <p-text [size]="'small'" [theme]="'dark'" class="block mb-1 text-[#86868d]">
+              {{ formatDisplayDate(event.date) }}
+            </p-text>
+            <p-text [size]="'small'" [theme]="'dark'" class="block mb-1" [style.color]="getTimeInfo(event).color">
+              {{ getTimeInfo(event).label }}
+            </p-text>
+            <p-text *ngIf="event.epsEstimated" [size]="'x-small'" [theme]="'dark'" class="block text-[#86868d]">
+              EPS Est: {{ event.epsEstimated }}
+            </p-text>
+          </div>
+          <p-tag [color]="getTagColor(event.time)" [theme]="'dark'">
+            {{ event.time || '?' }}
+          </p-tag>
+        </div>
+      </div>
+    </div>
 
-  <div *ngIf="!loading && !error && filteredEarnings.length === 0" class="empty-container">
-    <p>No earnings found for the selected period.</p>
-    <ion-button (click)="navigateToSettings()" size="small">
-      Manage Watchlist
-    </ion-button>
+    <!-- Empty State -->
+    <div *ngIf="!loading && !error && filteredEarnings.length === 0" class="flex flex-col items-center justify-center min-h-[400px] gap-4">
+      <p-text [size]="'large'" [theme]="'dark'" class="text-[#86868d]">
+        No earnings found for the selected period.
+      </p-text>
+      <p-button (click)="navigateToSettings()" [variant]="'secondary'" [theme]="'dark'">
+        Manage Watchlist
+      </p-button>
+    </div>
   </div>
 </ion-content>

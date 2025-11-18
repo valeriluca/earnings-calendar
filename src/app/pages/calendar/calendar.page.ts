@@ -8,7 +8,9 @@ import {
   IonToolbar, 
   IonButtons,
   IonRefresher,
-  IonRefresherContent
+  IonRefresherContent,
+  IonModal,
+  IonButton
 } from '@ionic/angular/standalone';
 import { PorscheDesignSystemModule } from '@porsche-design-system/components-angular';
 import { FullCalendarModule } from '@fullcalendar/angular';
@@ -37,6 +39,8 @@ import { Router } from '@angular/router';
     IonButtons,
     IonRefresher,
     IonRefresherContent,
+    IonModal,
+    IonButton,
     FullCalendarModule,
     PorscheDesignSystemModule
   ]
@@ -58,6 +62,8 @@ export class CalendarPage implements OnInit {
 
   loading = false;
   error: string | null = null;
+  isModalOpen = false;
+  selectedEvent: any = null;
 
   constructor(
     private earningsService: EarningsService,
@@ -90,7 +96,15 @@ export class CalendarPage implements OnInit {
 
       this.earningsService.getEarningsBySymbols(symbols, today, futureDate).subscribe({
         next: (events) => {
-          this.calendarOptions.events = this.transformToCalendarEvents(events);
+          // Add company names from watchlist to earnings events
+          const eventsWithNames = events.map(event => {
+            const stock = watchlist.find(s => s.symbol === event.symbol);
+            return {
+              ...event,
+              name: stock?.name || event.symbol
+            };
+          });
+          this.calendarOptions.events = this.transformToCalendarEvents(eventsWithNames);
           this.loading = false;
         },
         error: (err) => {
@@ -111,10 +125,11 @@ export class CalendarPage implements OnInit {
       const timeInfo = EARNINGS_TIME_MAP[event.time || 'null'];
       return {
         id: `${event.symbol}-${event.date}`,
-        title: event.symbol,
+        title: event.name || event.symbol,
         start: event.date,
         extendedProps: {
           symbol: event.symbol,
+          name: event.name,
           time: event.time,
           timeLabel: timeInfo.label,
           eps: event.eps,
@@ -141,9 +156,46 @@ export class CalendarPage implements OnInit {
 
   handleEventClick(info: any) {
     const props = info.event.extendedProps;
-    const epsInfo = props.epsEstimated ? `\nEPS Est: ${props.epsEstimated}` : '';
-    const message = `${info.event.title}\n${props.timeLabel}${epsInfo}`;
-    alert(message);
+    this.selectedEvent = {
+      title: info.event.title,
+      symbol: props.symbol,
+      date: info.event.start,
+      time: props.time,
+      timeLabel: props.timeLabel,
+      eps: props.eps,
+      epsEstimated: props.epsEstimated,
+      berlinTime: this.getBerlinTime(props.time)
+    };
+    this.isModalOpen = true;
+  }
+
+  getBerlinTime(earningsTime: string | null): string {
+    if (!earningsTime) return 'Time TBD';
+    
+    switch (earningsTime) {
+      case 'bmo': // Before Market Open - US markets open at 9:30 AM ET = 3:30 PM Berlin
+        return '~15:30 CET/CEST';
+      case 'amc': // After Market Close - US markets close at 4:00 PM ET = 10:00 PM Berlin
+        return '~22:00 CET/CEST';
+      case 'dmt': // During Market Time
+        return '15:30 - 22:00 CET/CEST';
+      default:
+        return 'Time TBD';
+    }
+  }
+
+  closeModal() {
+    this.isModalOpen = false;
+    this.selectedEvent = null;
+  }
+
+  formatModalDate(date: Date): string {
+    return new Date(date).toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
   }
 
   async handleRefresh(event: any) {

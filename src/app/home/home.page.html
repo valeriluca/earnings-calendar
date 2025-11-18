@@ -1,7 +1,7 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>
-      Blank
+      <p-heading [size]="'large'" [theme]="'dark'">Earnings Calendar</p-heading>
     </ion-title>
   </ion-toolbar>
 </ion-header>
@@ -9,12 +9,83 @@
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
+      <ion-title size="large">
+        <p-heading [size]="'x-large'" [theme]="'dark'">Earnings Calendar</p-heading>
+      </ion-title>
     </ion-toolbar>
   </ion-header>
 
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
+  <div class="container-fluid p-8">
+    <div class="max-w-4xl mx-auto space-y-6">
+      <!-- Hero Section -->
+      <div class="bg-[#1a1a1d] rounded-lg p-8 shadow-lg">
+        <p-heading [size]="'xx-large'" [theme]="'dark'" class="mb-4">
+          Welcome to Your Earnings Tracker
+        </p-heading>
+        <p-text [size]="'large'" [theme]="'dark'" class="text-[#e4e4e6]">
+          Track earnings announcements for your favorite stocks. Stay informed about upcoming earnings calls and financial results.
+        </p-text>
+      </div>
+
+      <!-- Features Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- Calendar Feature -->
+        <div class="bg-[#1a1a1d] rounded-lg p-6 shadow-lg">
+          <div class="mb-4">
+            <p-icon [name]="'calendar'" [size]="'large'" [theme]="'dark'"></p-icon>
+          </div>
+          <p-heading [size]="'medium'" [theme]="'dark'" class="mb-2">
+            Calendar View
+          </p-heading>
+          <p-text [size]="'small'" [theme]="'dark'" class="text-[#e4e4e6]">
+            View all upcoming earnings in a beautiful calendar interface
+          </p-text>
+        </div>
+
+        <!-- List Feature -->
+        <div class="bg-[#1a1a1d] rounded-lg p-6 shadow-lg">
+          <div class="mb-4">
+            <p-icon [name]="'menu-lines'" [size]="'large'" [theme]="'dark'"></p-icon>
+          </div>
+          <p-heading [size]="'medium'" [theme]="'dark'" class="mb-2">
+            List View
+          </p-heading>
+          <p-text [size]="'small'" [theme]="'dark'" class="text-[#e4e4e6]">
+            Browse earnings announcements in a detailed list format
+          </p-text>
+        </div>
+
+        <!-- Settings Feature -->
+        <div class="bg-[#1a1a1d] rounded-lg p-6 shadow-lg">
+          <div class="mb-4">
+            <p-icon [name]="'configurate'" [size]="'large'" [theme]="'dark'"></p-icon>
+          </div>
+          <p-heading [size]="'medium'" [theme]="'dark'" class="mb-2">
+            Custom Watchlist
+          </p-heading>
+          <p-text [size]="'small'" [theme]="'dark'" class="text-[#e4e4e6]">
+            Manage your stock watchlist and notification preferences
+          </p-text>
+        </div>
+      </div>
+
+      <!-- CTA Section -->
+      <div class="bg-[#1a1a1d] rounded-lg p-8 shadow-lg text-center">
+        <p-heading [size]="'large'" [theme]="'dark'" class="mb-4">
+          Get Started
+        </p-heading>
+        <p-text [size]="'medium'" [theme]="'dark'" class="text-[#e4e4e6] mb-6">
+          Use the navigation tabs below to explore your earnings calendar and manage your watchlist.
+        </p-text>
+        <p-button-group>
+          <p-button [variant]="'primary'" [theme]="'dark'">
+            View Calendar
+          </p-button>
+          <p-button [variant]="'secondary'" [theme]="'dark'">
+            Manage Settings
+          </p-button>
+        </p-button-group>
+      </div>
+    </div>
   </div>
 </ion-content>

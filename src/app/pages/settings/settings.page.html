@@ -1,113 +1,136 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>Settings</ion-title>
+    <ion-title>
+      <p-heading [size]="'large'" [theme]="'dark'">Settings</p-heading>
+    </ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <div class="settings-container">
+  <div class="p-6 max-w-4xl mx-auto space-y-6">
     
     <!-- Notifications Section -->
-    <div class="section">
-      <h2>
-        <ion-icon name="notifications-outline"></ion-icon>
-        Notifications
-      </h2>
+    <div class="bg-[#1a1a1d] rounded-lg p-6 shadow-lg">
+      <div class="flex items-center gap-3 mb-4">
+        <p-icon [name]="'information'" [size]="'medium'" [theme]="'dark'"></p-icon>
+        <p-heading [size]="'large'" [theme]="'dark'">Notifications</p-heading>
+      </div>
       
-      <ion-list>
-        <ion-item>
-          <ion-label>Enable Notifications</ion-label>
-          <ion-toggle 
+      <div class="space-y-4">
+        <div class="flex items-center justify-between py-2">
+          <p-text [size]="'medium'" [theme]="'dark'">Enable Notifications</p-text>
+          <p-switch 
             [checked]="notificationSettings.enabled" 
-            (ionChange)="toggleNotifications($event)">
-          </ion-toggle>
-        </ion-item>
+            (update)="toggleNotifications($event)"
+            [theme]="'dark'">
+          </p-switch>
+        </div>
 
-        <ion-item *ngIf="notificationSettings.enabled">
-          <ion-label>Notification Time</ion-label>
+        <div *ngIf="notificationSettings.enabled" class="pt-2 border-t border-[#323236]">
+          <p-text [size]="'small'" [theme]="'dark'" class="block mb-2 text-[#86868d]">Notification Time</p-text>
           <ion-input
             type="time"
             [value]="notificationSettings.notificationTime"
-            (ionChange)="updateNotificationTime($event)">
+            (ionChange)="updateNotificationTime($event)"
+            class="custom-input">
           </ion-input>
-        </ion-item>
+        </div>
 
-        <ion-item *ngIf="notificationSettings.enabled">
-          <ion-button expand="block" (click)="testNotification()" size="small">
+        <div *ngIf="notificationSettings.enabled" class="pt-2">
+          <p-button 
+            expand="full" 
+            (click)="testNotification()" 
+            [variant]="'secondary'"
+            [theme]="'dark'">
             Test Notification
-          </ion-button>
-        </ion-item>
-      </ion-list>
+          </p-button>
+        </div>
+      </div>
 
-      <p class="section-note">
+      <p-text [size]="'x-small'" [theme]="'dark'" class="block mt-4 text-[#86868d]">
         <strong>Note:</strong> Notifications work best on native apps. Web app notifications have limited support on mobile browsers.
-      </p>
+      </p-text>
     </div>
 
     <!-- Watchlist Section -->
-    <div class="section">
-      <h2>
-        <ion-icon name="list-outline"></ion-icon>
-        Stock Watchlist
-      </h2>
+    <div class="bg-[#1a1a1d] rounded-lg p-6 shadow-lg">
+      <div class="flex items-center gap-3 mb-4">
+        <p-icon [name]="'menu-lines'" [size]="'medium'" [theme]="'dark'"></p-icon>
+        <p-heading [size]="'large'" [theme]="'dark'">Stock Watchlist</p-heading>
+      </div>
 
       <!-- Add Stock -->
-      <div class="add-stock-container">
-        <ion-searchbar
-          [(ngModel)]="newSymbol"
-          placeholder="Enter stock symbol (e.g., AAPL)"
-          (keyup.enter)="addStock()"
-          [debounce]="0">
-        </ion-searchbar>
-        <ion-button (click)="addStock()" size="default">
-          <ion-icon slot="icon-only" name="add-outline"></ion-icon>
-        </ion-button>
+      <div class="mb-4">
+        <p-text [size]="'small'" [theme]="'dark'" class="block mb-2 text-[#86868d]">Add Stock Symbol</p-text>
+        <div class="flex gap-2">
+          <ion-searchbar
+            [(ngModel)]="newSymbol"
+            placeholder="Enter stock symbol (e.g., AAPL)"
+            (keyup.enter)="addStock()"
+            [debounce]="0"
+            class="flex-1">
+          </ion-searchbar>
+          <p-button-pure 
+            [icon]="'plus'" 
+            (click)="addStock()" 
+            [hideLabel]="true"
+            [theme]="'dark'">
+            Add
+          </p-button-pure>
+        </div>
       </div>
 
       <!-- Search Watchlist -->
-      <ion-searchbar
-        [(ngModel)]="searchTerm"
-        placeholder="Search watchlist"
-        [debounce]="300">
-      </ion-searchbar>
+      <div class="mb-4">
+        <ion-searchbar
+          [(ngModel)]="searchTerm"
+          placeholder="Search watchlist"
+          [debounce]="300">
+        </ion-searchbar>
+      </div>
 
       <!-- Watchlist Items -->
-      <div class="watchlist-chips">
-        <ion-chip 
+      <div class="flex flex-wrap gap-2 min-h-[100px] mb-4">
+        <p-tag 
           *ngFor="let stock of filteredWatchlist()" 
-          color="primary"
-          (click)="removeStock(stock.symbol)">
-          <ion-label>{{ stock.symbol }}</ion-label>
-          <ion-icon name="close-outline"></ion-icon>
-        </ion-chip>
+          [color]="'primary'"
+          [theme]="'dark'"
+          (click)="removeStock(stock.symbol)"
+          class="cursor-pointer">
+          {{ stock.symbol }}
+        </p-tag>
+        
+        <div *ngIf="watchlist.length === 0" class="w-full text-center py-8">
+          <p-text [size]="'medium'" [theme]="'dark'" class="text-[#86868d]">
+            No stocks in watchlist. Add some symbols above!
+          </p-text>
+        </div>
       </div>
 
-      <div *ngIf="watchlist.length === 0" class="empty-watchlist">
-        <p>No stocks in watchlist. Add some symbols above!</p>
-      </div>
-
-      <ion-button 
-        expand="block" 
-        fill="outline" 
+      <p-button 
+        expand="full" 
+        [variant]="'secondary'"
         (click)="resetWatchlist()"
-        [disabled]="watchlist.length === 0">
+        [disabled]="watchlist.length === 0"
+        [theme]="'dark'">
         Reset to Defaults
-      </ion-button>
+      </p-button>
 
-      <p class="section-note">
-        Tap a stock chip to remove it from your watchlist.
-      </p>
+      <p-text [size]="'x-small'" [theme]="'dark'" class="block mt-4 text-[#86868d]">
+        Tap the × button on a stock chip to remove it from your watchlist.
+      </p-text>
     </div>
 
     <!-- App Info -->
-    <div class="section">
-      <h2>About</h2>
-      <p class="app-info">
-        <strong>Earnings Calendar</strong><br>
-        Version 1.0.0<br>
-        Built with Ionic + Angular<br>
-        Data from Financial Modeling Prep API
-      </p>
+    <div class="bg-[#1a1a1d] rounded-lg p-6 shadow-lg">
+      <p-heading [size]="'large'" [theme]="'dark'" class="mb-4">About</p-heading>
+      <div class="space-y-2">
+        <p-text [size]="'medium'" [theme]="'dark'"><strong>Earnings Calendar</strong></p-text>
+        <p-text [size]="'small'" [theme]="'dark'" class="text-[#86868d]">Version 1.0.0</p-text>
+        <p-text [size]="'small'" [theme]="'dark'" class="text-[#86868d]">Built with Ionic + Angular</p-text>
+        <p-text [size]="'small'" [theme]="'dark'" class="text-[#86868d]">Data from Financial Modeling Prep API</p-text>
+        <p-text [size]="'small'" [theme]="'dark'" class="text-[#86868d]">Design by Porsche Design System</p-text>
+      </div>
     </div>
 
   </div>

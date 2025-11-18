@@ -125,6 +125,21 @@
   }
 }
 
+// Modal styling
+ion-modal {
+  --background: rgba(26, 26, 29, 0.98);
+  --backdrop-opacity: 0.6;
+  
+  ion-toolbar {
+    --background: #1a1a1d;
+    --border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  ion-content {
+    --background: #0f0f10;
+  }
+}
+
 // Responsive adjustments
 @media (max-width: 768px) {
   ::ng-deep {

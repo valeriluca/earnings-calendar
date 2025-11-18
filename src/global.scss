@@ -35,6 +35,86 @@
  * https://ionicframework.com/docs/theming/dark-mode
  */
 
-/* @import "@ionic/angular/css/palettes/dark.always.css"; */
-/* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import '@ionic/angular/css/palettes/dark.system.css';
+@import "@ionic/angular/css/palettes/dark.always.css";
+
+/**
+ * Porsche Design System Global Styles
+ * -----------------------------------------------------
+ */
+body {
+	background-color: #0e0e10;
+	color: #e4e4e6;
+}
+
+ion-content {
+	--background: #0e0e10;
+	--color: #e4e4e6;
+}
+
+ion-toolbar {
+	--background: #1a1a1d;
+	--color: #e4e4e6;
+}
+
+ion-card {
+	--background: #1a1a1d;
+	--color: #e4e4e6;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+ion-item {
+	--background: #1a1a1d;
+	--color: #e4e4e6;
+	--border-color: #323236;
+}
+
+ion-list {
+	background: transparent;
+}
+
+// Porsche Design System component overrides
+p-text {
+	color: #e4e4e6;
+}
+
+p-heading {
+	color: #e4e4e6;
+}
+
+// FullCalendar dark theme
+.fc {
+	--fc-border-color: #323236;
+	--fc-button-bg-color: #d5001c;
+	--fc-button-border-color: #d5001c;
+	--fc-button-hover-bg-color: #bb0019;
+	--fc-button-hover-border-color: #bb0019;
+	--fc-button-active-bg-color: #a30016;
+	--fc-button-active-border-color: #a30016;
+	--fc-event-bg-color: #d5001c;
+	--fc-event-border-color: #d5001c;
+	--fc-neutral-bg-color: #1a1a1d;
+	--fc-page-bg-color: #0e0e10;
+	color: #e4e4e6;
+}
+
+.fc-theme-standard td,
+.fc-theme-standard th {
+	border-color: #323236;
+}
+
+.fc-col-header-cell {
+	background: #1a1a1d;
+	color: #e4e4e6;
+}
+
+.fc-daygrid-day {
+	background: #0e0e10;
+	
+	&.fc-day-today {
+		background-color: rgba(213, 0, 28, 0.1);
+	}
+}
+
+.fc-daygrid-day-number {
+	color: #e4e4e6;
+}

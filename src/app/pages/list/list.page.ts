@@ -6,19 +6,11 @@ import {
   IonHeader,
   IonTitle,
   IonToolbar,
-  IonList,
-  IonItem,
-  IonLabel,
-  IonBadge,
-  IonSpinner,
   IonRefresher,
   IonRefresherContent,
-  IonButton,
-  IonButtons,
-  IonIcon,
-  IonSegment,
-  IonSegmentButton
+  IonButtons
 } from '@ionic/angular/standalone';
+import { PorscheDesignSystemModule } from '@porsche-design-system/components-angular';
 import { EarningsService } from '../../services/earnings.service';
 import { StorageService } from '../../services/storage.service';
 import { EarningsEvent, EARNINGS_TIME_MAP } from '../../models/earnings-event.model';
@@ -38,18 +30,10 @@ import { Router } from '@angular/router';
     IonHeader,
     IonTitle,
     IonToolbar,
-    IonList,
-    IonItem,
-    IonLabel,
-    IonBadge,
-    IonSpinner,
     IonRefresher,
     IonRefresherContent,
-    IonButton,
     IonButtons,
-    IonIcon,
-    IonSegment,
-    IonSegmentButton
+    PorscheDesignSystemModule
   ]
 })
 export class ListPage implements OnInit {
@@ -94,7 +78,15 @@ export class ListPage implements OnInit {
       this.earningsService.getEarningsBySymbols(symbols, today, futureDate).subscribe({
         next: (events) => {
           console.log('Earnings events received:', events);
-          this.earnings = events.sort((a, b) => 
+          // Add company names from watchlist to earnings events
+          const eventsWithNames = events.map(event => {
+            const stock = watchlist.find(s => s.symbol === event.symbol);
+            return {
+              ...event,
+              name: stock?.name || event.symbol
+            };
+          });
+          this.earnings = eventsWithNames.sort((a, b) => 
             new Date(a.date).getTime() - new Date(b.date).getTime()
           );
           this.filterEarnings();
@@ -136,6 +128,15 @@ export class ListPage implements OnInit {
 
   getTimeInfo(event: EarningsEvent) {
     return EARNINGS_TIME_MAP[event.time || 'null'];
+  }
+
+  getTagColor(time: string | null): 'primary' | 'background-surface' | 'notification-info-soft' | 'notification-success-soft' | 'notification-warning-soft' | 'notification-neutral' {
+    switch (time) {
+      case 'bmo': return 'notification-info-soft';
+      case 'amc': return 'notification-success-soft';
+      case 'dmt': return 'notification-warning-soft';
+      default: return 'notification-neutral';
+    }
   }
 
   formatDate(date: Date): string {

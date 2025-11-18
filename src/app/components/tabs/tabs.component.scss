@@ -1,0 +1,33 @@
+.porsche-tab-bar {
+  background: #1a1a1d;
+  border-top: 1px solid #323236;
+}
+
+.porsche-tab-button {
+  --color: #86868d;
+  --color-selected: #d5001c;
+  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  
+  &.tab-selected {
+    p-icon {
+      color: #d5001c;
+    }
+    
+    p-text {
+      color: #d5001c;
+    }
+  }
+  
+  p-icon {
+    color: #86868d;
+  }
+  
+  p-text {
+    color: #86868d;
+  }
+}

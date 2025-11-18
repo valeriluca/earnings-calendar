@@ -6,18 +6,12 @@ import {
   IonHeader,
   IonTitle,
   IonToolbar,
-  IonList,
-  IonItem,
-  IonLabel,
-  IonToggle,
-  IonButton,
-  IonIcon,
   IonInput,
-  IonChip,
   IonSearchbar,
   AlertController,
   ToastController
 } from '@ionic/angular/standalone';
+import { PorscheDesignSystemModule } from '@porsche-design-system/components-angular';
 import { StorageService } from '../../services/storage.service';
 import { NotificationService } from '../../services/notification.service';
 import { Stock, DEFAULT_STOCKS } from '../../models/stock.model';
@@ -37,15 +31,9 @@ import { addOutline, closeOutline, notificationsOutline, listOutline } from 'ion
     IonHeader,
     IonTitle,
     IonToolbar,
-    IonList,
-    IonItem,
-    IonLabel,
-    IonToggle,
-    IonButton,
-    IonIcon,
     IonInput,
-    IonChip,
-    IonSearchbar
+    IonSearchbar,
+    PorscheDesignSystemModule
   ]
 })
 export class SettingsPage implements OnInit {
