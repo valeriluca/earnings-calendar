@@ -1,0 +1,114 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Settings</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="settings-container">
+    
+    <!-- Notifications Section -->
+    <div class="section">
+      <h2>
+        <ion-icon name="notifications-outline"></ion-icon>
+        Notifications
+      </h2>
+      
+      <ion-list>
+        <ion-item>
+          <ion-label>Enable Notifications</ion-label>
+          <ion-toggle 
+            [checked]="notificationSettings.enabled" 
+            (ionChange)="toggleNotifications($event)">
+          </ion-toggle>
+        </ion-item>
+
+        <ion-item *ngIf="notificationSettings.enabled">
+          <ion-label>Notification Time</ion-label>
+          <ion-input
+            type="time"
+            [value]="notificationSettings.notificationTime"
+            (ionChange)="updateNotificationTime($event)">
+          </ion-input>
+        </ion-item>
+
+        <ion-item *ngIf="notificationSettings.enabled">
+          <ion-button expand="block" (click)="testNotification()" size="small">
+            Test Notification
+          </ion-button>
+        </ion-item>
+      </ion-list>
+
+      <p class="section-note">
+        <strong>Note:</strong> Notifications work best on native apps. Web app notifications have limited support on mobile browsers.
+      </p>
+    </div>
+
+    <!-- Watchlist Section -->
+    <div class="section">
+      <h2>
+        <ion-icon name="list-outline"></ion-icon>
+        Stock Watchlist
+      </h2>
+
+      <!-- Add Stock -->
+      <div class="add-stock-container">
+        <ion-searchbar
+          [(ngModel)]="newSymbol"
+          placeholder="Enter stock symbol (e.g., AAPL)"
+          (keyup.enter)="addStock()"
+          [debounce]="0">
+        </ion-searchbar>
+        <ion-button (click)="addStock()" size="default">
+          <ion-icon slot="icon-only" name="add-outline"></ion-icon>
+        </ion-button>
+      </div>
+
+      <!-- Search Watchlist -->
+      <ion-searchbar
+        [(ngModel)]="searchTerm"
+        placeholder="Search watchlist"
+        [debounce]="300">
+      </ion-searchbar>
+
+      <!-- Watchlist Items -->
+      <div class="watchlist-chips">
+        <ion-chip 
+          *ngFor="let stock of filteredWatchlist()" 
+          color="primary"
+          (click)="removeStock(stock.symbol)">
+          <ion-label>{{ stock.symbol }}</ion-label>
+          <ion-icon name="close-outline"></ion-icon>
+        </ion-chip>
+      </div>
+
+      <div *ngIf="watchlist.length === 0" class="empty-watchlist">
+        <p>No stocks in watchlist. Add some symbols above!</p>
+      </div>
+
+      <ion-button 
+        expand="block" 
+        fill="outline" 
+        (click)="resetWatchlist()"
+        [disabled]="watchlist.length === 0">
+        Reset to Defaults
+      </ion-button>
+
+      <p class="section-note">
+        Tap a stock chip to remove it from your watchlist.
+      </p>
+    </div>
+
+    <!-- App Info -->
+    <div class="section">
+      <h2>About</h2>
+      <p class="app-info">
+        <strong>Earnings Calendar</strong><br>
+        Version 1.0.0<br>
+        Built with Ionic + Angular<br>
+        Data from Financial Modeling Prep API
+      </p>
+    </div>
+
+  </div>
+</ion-content>

@@ -1,0 +1,153 @@
+// FullCalendar customization with Porsche Design System styling
+::ng-deep {
+  .fc {
+    font-family: 'Porsche Next', system-ui, -apple-system, sans-serif;
+    font-size: 14px;
+    color: #ffffff;
+
+    // Calendar outer container
+    .fc-scrollgrid {
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.06), transparent),
+                  rgba(15, 23, 42, 0.9);
+      backdrop-filter: blur(10px);
+    }
+    
+    // Toolbar
+    .fc-toolbar {
+      margin-bottom: 1rem;
+      color: #ffffff;
+      
+      .fc-toolbar-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #ffffff;
+      }
+      
+      .fc-button {
+        background: rgba(15, 23, 42, 0.7);
+        border: 1px solid rgba(148, 163, 184, 0.6);
+        color: #e5e7eb;
+        padding: 0.5rem 1rem;
+        border-radius: 999px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        
+        &:hover:not(:disabled) {
+          background: rgba(148, 163, 184, 0.2);
+          border-color: #e5e7eb;
+        }
+        
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+        
+        &.fc-button-active {
+          background: #e5e7eb;
+          color: #020617;
+          border-color: #e5e7eb;
+        }
+      }
+    }
+    
+    // Day headers
+    .fc-col-header-cell {
+      background: rgba(15, 23, 42, 0.95);
+      border-color: rgba(148, 163, 184, 0.4);
+      padding: 0.75rem 0.5rem;
+      font-weight: 600;
+      color: #e5e7eb;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+    }
+    
+    // Day cells
+    .fc-daygrid-day {
+      border-color: rgba(148, 163, 184, 0.2);
+      background: rgba(15, 23, 42, 0.8);
+      
+      &.fc-day-today {
+        background: radial-gradient(circle at top, rgba(248, 250, 252, 0.09), transparent);
+        
+        .fc-daygrid-day-number {
+          background: rgba(248, 250, 252, 0.12);
+          color: #ffffff;
+          border-radius: 999px;
+          padding-inline: 0.6rem;
+        }
+      }
+    }
+    
+    .fc-daygrid-day-number {
+      padding: 0.5rem;
+      font-weight: 500;
+      color: #e5e7eb;
+    }
+    
+    // Events
+    .fc-event {
+      cursor: pointer;
+      margin: 2px 1px;
+      border-radius: 999px;
+      border: none;
+      font-weight: 500;
+      padding: 2px 8px;
+      transition: transform 0.15s, box-shadow 0.15s, background-color 0.15s;
+      color: #020617;
+      
+      &:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.5);
+        background-color: rgba(248, 250, 252, 0.9);
+      }
+      
+      .fc-event-title {
+        font-weight: 600;
+        font-size: 0.75rem;
+      }
+    }
+    
+    // More link
+    .fc-daygrid-more-link {
+      color: #e5e7eb;
+      font-weight: 600;
+      font-size: 0.75rem;
+      margin-top: 2px;
+      
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  ::ng-deep {
+    .fc {
+      font-size: 12px;
+      
+      .fc-toolbar-title {
+        font-size: 1.25rem;
+      }
+      
+      .fc-button {
+        padding: 0.375rem 0.75rem;
+        font-size: 0.875rem;
+      }
+      
+      .fc-col-header-cell {
+        padding: 0.5rem 0.25rem;
+        font-size: 0.65rem;
+      }
+      
+      .fc-daygrid-day-number {
+        padding: 0.25rem;
+      }
+    }
+  }
+}

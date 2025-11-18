@@ -1,0 +1,58 @@
+airbnb
+alibaba
+amazon
+amd
+apple
+aurora cannabis
+baidu
+basf
+blackRock
+block
+broadcom
+c3ai
+canopy growth
+Caterpillar
+cloudflare
+coca cola
+coinbase
+dax
+disney
+ebay
+Fiserv
+Hang Seng
+Illumina
+intel
+jazz pharmaceuticals
+jd.com
+lumen
+Marvell Technology
+Meta
+Microsoft
+nasdaq
+nike
+nio
+novo nordisk
+nvidia
+ocugen
+paypal
+philip morris
+qualcomm
+rheinmetall
+sap
+snowflake
+sp500
+spotify
+starbucks
+Suess Microtec
+teladoc health
+tencent holdings limited
+tencent music
+tesla
+uber technologies
+under armour
+United Health
+warner bros
+wuxi biologics
+Xiaomi
+xpeng
+zalando

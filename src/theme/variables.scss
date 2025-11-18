@@ -1,2 +1,11 @@
 // For information on how to create your own theme, please refer to:
 // https://ionicframework.com/docs/theming/
+
+:root {
+	/**
+	 * Global font family
+	 * Set to Porsche Design font; ensure font is loaded
+	 * via Porsche Design System or a separate font include.
+	 */
+	--ion-font-family: "Porsche Next", "PorscheDesign", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}

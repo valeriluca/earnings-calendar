@@ -1,0 +1,68 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Earnings List</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="loadEarnings()">
+        <ion-icon name="refresh-outline"></ion-icon>
+      </ion-button>
+      <ion-button (click)="navigateToSettings()">
+        <ion-icon name="settings-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-segment [(ngModel)]="selectedFilter" (ionChange)="onFilterChange($event)">
+      <ion-segment-button value="all">
+        <ion-label>All</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="today">
+        <ion-label>Today</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="week">
+        <ion-label>This Week</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <div *ngIf="loading" class="loading-container">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Loading earnings...</p>
+  </div>
+
+  <div *ngIf="error && !loading" class="error-container">
+    <p>{{ error }}</p>
+    <ion-button (click)="loadEarnings()" size="small">Retry</ion-button>
+  </div>
+
+  <ion-list *ngIf="!loading && !error && filteredEarnings.length > 0">
+    <ion-item *ngFor="let event of filteredEarnings" [class.today-item]="isToday(event.date)">
+      <ion-label>
+        <h2>
+          {{ event.symbol }}
+          <ion-badge *ngIf="isToday(event.date)" color="primary" style="margin-left: 8px;">TODAY</ion-badge>
+        </h2>
+        <p>{{ formatDisplayDate(event.date) }}</p>
+        <p>{{ getTimeInfo(event).label }}</p>
+        <p *ngIf="event.epsEstimated" class="eps-info">
+          EPS Est: {{ event.epsEstimated }}
+        </p>
+      </ion-label>
+      <ion-badge slot="end" [color]="getTimeInfo(event).color">
+        {{ event.time || '?' }}
+      </ion-badge>
+    </ion-item>
+  </ion-list>
+
+  <div *ngIf="!loading && !error && filteredEarnings.length === 0" class="empty-container">
+    <p>No earnings found for the selected period.</p>
+    <ion-button (click)="navigateToSettings()" size="small">
+      Manage Watchlist
+    </ion-button>
+  </div>
+</ion-content>

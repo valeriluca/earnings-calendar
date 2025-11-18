@@ -1,0 +1,78 @@
+<ion-header [translucent]="true">
+  <ion-toolbar class="bg-background-surface">
+    <ion-title class="prose-heading-medium">Earnings Calendar</ion-title>
+    <ion-buttons slot="end">
+      <p-button-pure [icon]="'reset'" (click)="loadEarnings()" [hideLabel]="true">
+        Refresh
+      </p-button-pure>
+      <p-button-pure [icon]="'configurate'" (click)="navigateToSettings()" [hideLabel]="true">
+        Settings
+      </p-button-pure>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="bg-background-base">
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <div class="p-fluid-md max-w-7xl mx-auto">
+    <!-- Loading State -->
+    <div *ngIf="loading" class="flex flex-col items-center justify-center min-h-[400px] gap-fluid-sm">
+      <p-spinner [size]="'large'"></p-spinner>
+      <p-text [size]="'medium'" class="text-state-disabled">Loading earnings data...</p-text>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="error && !loading" class="flex flex-col items-center justify-center min-h-[400px] gap-fluid-md">
+      <p-text [size]="'large'" class="text-state-error">{{ error }}</p-text>
+      <p-button (click)="loadEarnings()" [variant]="'primary'">
+        Retry
+      </p-button>
+    </div>
+
+    <!-- Calendar View -->
+    <div *ngIf="!loading && !error" class="space-y-fluid-md">
+      <!-- Header Card -->
+      <div class="bg-surface rounded-lg p-fluid-md shadow-sm">
+        <p-text [size]="'x-large'" [weight]="'semibold'" class="block mb-fluid-xs">
+          Upcoming Earnings
+        </p-text>
+        <p-text [size]="'medium'" class="text-state-disabled">
+          Track earnings announcements for your watchlist stocks
+        </p-text>
+      </div>
+
+      <!-- Calendar Container -->
+      <div class="bg-surface rounded-lg p-fluid-md shadow-sm">
+        <full-calendar [options]="calendarOptions"></full-calendar>
+      </div>
+      
+      <!-- Legend Card -->
+      <div class="bg-surface rounded-lg p-fluid-md shadow-sm">
+        <p-text [size]="'large'" [weight]="'semibold'" class="block mb-fluid-sm">
+          Legend
+        </p-text>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-fluid-xs">
+          <div class="flex items-center gap-fluid-xs">
+            <div class="w-4 h-4 rounded" style="background-color: #3880ff;"></div>
+            <p-text [size]="'small'">Before Market Open (BMO)</p-text>
+          </div>
+          <div class="flex items-center gap-fluid-xs">
+            <div class="w-4 h-4 rounded" style="background-color: #2dd36f;"></div>
+            <p-text [size]="'small'">After Market Close (AMC)</p-text>
+          </div>
+          <div class="flex items-center gap-fluid-xs">
+            <div class="w-4 h-4 rounded" style="background-color: #ffc409;"></div>
+            <p-text [size]="'small'">During Market Time (DMT)</p-text>
+          </div>
+          <div class="flex items-center gap-fluid-xs">
+            <div class="w-4 h-4 rounded" style="background-color: #92949c;"></div>
+            <p-text [size]="'small'">Time TBD</p-text>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ion-content>
