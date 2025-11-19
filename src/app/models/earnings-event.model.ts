@@ -1,6 +1,7 @@
 export interface EarningsEvent {
   symbol: string;
   name?: string; // Company name
+  logoUrl?: string; // Company logo URL
   date: string; // YYYY-MM-DD
   time: EarningsTime; // 'bmo' | 'amc' | 'dmt' | null
   eps?: number;

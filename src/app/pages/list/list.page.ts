@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
@@ -17,6 +17,7 @@ import { EarningsEvent, EARNINGS_TIME_MAP } from '../../models/earnings-event.mo
 import { addIcons } from 'ionicons';
 import { refreshOutline, settingsOutline } from 'ionicons/icons';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-list',
@@ -36,12 +37,13 @@ import { Router } from '@angular/router';
     PorscheDesignSystemModule
   ]
 })
-export class ListPage implements OnInit {
+export class ListPage implements OnInit, OnDestroy {
   earnings: EarningsEvent[] = [];
   filteredEarnings: EarningsEvent[] = [];
   loading = false;
   error: string | null = null;
   selectedFilter = 'all';
+  private watchlistSubscription?: Subscription;
 
   constructor(
     private earningsService: EarningsService,
@@ -53,6 +55,17 @@ export class ListPage implements OnInit {
 
   ngOnInit() {
     this.loadEarnings();
+    // Subscribe to watchlist changes
+    this.watchlistSubscription = this.storageService.watchlist$.subscribe(() => {
+      this.loadEarnings();
+    });
+  }
+
+  ngOnDestroy() {
+    // Clean up subscription
+    if (this.watchlistSubscription) {
+      this.watchlistSubscription.unsubscribe();
+    }
   }
 
   async loadEarnings() {

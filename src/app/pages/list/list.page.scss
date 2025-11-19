@@ -1,3 +1,5 @@
+@use '@porsche-design-system/components-angular/styles' as *;
+
 .loading-container,
 .error-container,
 .empty-container {
@@ -60,4 +62,14 @@ ion-label {
 ion-badge {
   font-size: 11px;
   text-transform: uppercase;
+}
+
+// Blurred card effect
+.list-card-blur {
+  @include pds-frosted-glass;
+  background: rgba(44, 44, 46, 0.7) !important;
+  
+  &:hover {
+    background: rgba(58, 58, 60, 0.7) !important;
+  }
 }

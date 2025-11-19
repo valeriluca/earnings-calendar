@@ -1,6 +1,6 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>
+    <ion-title style="padding-left: 16px;">
       <p-heading [size]="'large'" [theme]="'dark'">Earnings Calendar</p-heading>
     </ion-title>
     <ion-buttons slot="end">
@@ -37,7 +37,7 @@
     <!-- Calendar View -->
     <div *ngIf="!loading && !error" class="space-y-6">
       <!-- Header Card -->
-      <div class="bg-[#2C2C2E] rounded-lg p-6 shadow-lg">
+      <div class="bg-transparent rounded-lg p-6 shadow-lg calendar-card-blur">
         <p-heading [size]="'x-large'" [theme]="'dark'" class="mb-2">
           Upcoming Earnings
         </p-heading>
@@ -47,12 +47,12 @@
       </div>
 
       <!-- Calendar Container -->
-      <div class="bg-[#2C2C2E] rounded-lg p-6 shadow-lg">
-        <full-calendar [options]="calendarOptions"></full-calendar>
+      <div class="bg-transparent rounded-lg p-6 shadow-lg calendar-card-blur">
+        <full-calendar #calendar [options]="calendarOptions"></full-calendar>
       </div>
       
       <!-- Legend Card -->
-      <div class="bg-[#2C2C2E] rounded-lg p-6 shadow-lg">
+      <div class="bg-transparent rounded-lg p-6 shadow-lg calendar-card-blur">
         <p-heading [size]="'large'" [theme]="'dark'" class="mb-4">
           Legend
         </p-heading>
@@ -96,17 +96,28 @@
       <ion-content class="ion-padding">
         <div *ngIf="selectedEvent" class="space-y-6">
           <!-- Company Info -->
-          <div class="bg-[#2C2C2E] rounded-lg p-8 shadow-lg">
-            <p-heading [size]="'large'" [theme]="'dark'" class="mb-2" style="padding: 4px 0;">
-              {{ selectedEvent.title }}
-            </p-heading>
-            <p-text [size]="'medium'" [theme]="'dark'" class="text-[#C9C9CB]" style="padding: 4px 0;">
-              {{ selectedEvent.symbol }}
-            </p-text>
+          <div class="bg-transparent rounded-lg p-8 shadow-lg modal-card-blur">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+              <img 
+                *ngIf="selectedEvent.logoUrl"
+                [src]="selectedEvent.logoUrl" 
+                [alt]="selectedEvent.title"
+                style="width: 48px; height: 48px; border-radius: 8px; object-fit: contain; background: white; padding: 4px;"
+                (error)="$event.target.style.display='none'"
+              />
+              <div>
+                <p-heading [size]="'large'" [theme]="'dark'" class="mb-2" style="padding: 4px 0;">
+                  {{ selectedEvent.title }}
+                </p-heading>
+                <p-text [size]="'medium'" [theme]="'dark'" class="text-[#C9C9CB]" style="padding: 4px 0;">
+                  {{ selectedEvent.symbol }}
+                </p-text>
+              </div>
+            </div>
           </div>
 
           <!-- Date & Time Info -->
-          <div class="bg-[#2C2C2E] rounded-lg p-8 shadow-lg space-y-4">
+          <div class="bg-transparent rounded-lg p-8 shadow-lg space-y-4 modal-card-blur">
             <div style="margin-bottom: 16px;">
               <p-text [size]="'small'" [theme]="'dark'" class="block mb-1 text-[#C9C9CB]" style="padding: 4px 0;">
                 Date
@@ -136,7 +147,7 @@
           </div>
 
           <!-- Financial Estimates -->
-          <div *ngIf="selectedEvent.epsEstimated || selectedEvent.eps" class="bg-[#2C2C2E] rounded-lg p-8 shadow-lg space-y-4">
+          <div *ngIf="selectedEvent.epsEstimated || selectedEvent.eps" class="bg-transparent rounded-lg p-8 shadow-lg space-y-4 modal-card-blur">
             <p-heading [size]="'medium'" [theme]="'dark'" class="mb-3" style="padding: 4px 0;">
               Financial Data
             </p-heading>
@@ -161,7 +172,7 @@
           </div>
 
           <!-- Info Note -->
-          <div class="bg-[#2C2C2E] rounded-lg p-6 shadow-lg">
+          <div class="bg-transparent rounded-lg p-6 shadow-lg modal-card-blur">
             <p-text [size]="'x-small'" [theme]="'dark'" class="text-[#C9C9CB]" style="padding: 4px 0; line-height: 1.6;">
               <strong>Note:</strong> Berlin times are approximate and based on standard US market hours. 
               Actual earnings release times may vary. CET/CEST adjusts for daylight saving time.

@@ -76,8 +76,11 @@ export class SettingsPage implements OnInit {
       return;
     }
 
+    // Look up the stock name from DEFAULT_STOCKS if it exists
+    const defaultStock = DEFAULT_STOCKS.find(s => s.symbol === symbol);
     const stock: Stock = {
       symbol: symbol,
+      name: defaultStock?.name,
       addedAt: Date.now()
     };
 

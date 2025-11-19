@@ -1,33 +1,42 @@
+@use '@porsche-design-system/components-angular/styles' as *;
+
+// Frosted glass mixin
+@mixin pds-frosted-glass {
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
 .porsche-tab-bar {
-  background: #1a1a1d;
-  border-top: 1px solid #323236;
+  @include pds-frosted-glass;
+  background: transparent;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .porsche-tab-button {
-  --color: #86868d;
+  --color: #ffffff;
   --color-selected: #d5001c;
+  background: transparent !important;
   
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
+  ion-icon {
+    color: #ffffff;
+    font-size: 24px;
+  }
+  
+  ion-label {
+    color: #ffffff;
+    font-size: 12px;
+    margin-top: 4px;
+  }
   
   &.tab-selected {
-    p-icon {
+    ion-icon {
       color: #d5001c;
     }
     
-    p-text {
+    ion-label {
       color: #d5001c;
     }
-  }
-  
-  p-icon {
-    color: #86868d;
-  }
-  
-  p-text {
-    color: #86868d;
   }
 }

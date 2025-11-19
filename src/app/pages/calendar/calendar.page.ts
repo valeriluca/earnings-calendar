@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { 
@@ -13,7 +13,7 @@ import {
   IonButton
 } from '@ionic/angular/standalone';
 import { PorscheDesignSystemModule } from '@porsche-design-system/components-angular';
-import { FullCalendarModule } from '@fullcalendar/angular';
+import { FullCalendarModule, FullCalendarComponent } from '@fullcalendar/angular';
 import { CalendarOptions, EventInput } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
@@ -23,6 +23,7 @@ import { EarningsEvent, EARNINGS_TIME_MAP } from '../../models/earnings-event.mo
 import { addIcons } from 'ionicons';
 import { refreshOutline, settingsOutline } from 'ionicons/icons';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-calendar',
@@ -45,7 +46,9 @@ import { Router } from '@angular/router';
     PorscheDesignSystemModule
   ]
 })
-export class CalendarPage implements OnInit {
+export class CalendarPage implements OnInit, OnDestroy {
+  @ViewChild('calendar') calendarComponent?: FullCalendarComponent;
+  
   calendarOptions: CalendarOptions = {
     plugins: [dayGridPlugin, interactionPlugin],
     initialView: 'dayGridMonth',
@@ -64,6 +67,7 @@ export class CalendarPage implements OnInit {
   error: string | null = null;
   isModalOpen = false;
   selectedEvent: any = null;
+  private watchlistSubscription?: Subscription;
 
   constructor(
     private earningsService: EarningsService,
@@ -73,8 +77,30 @@ export class CalendarPage implements OnInit {
     addIcons({ refreshOutline, settingsOutline });
   }
 
+  ionViewDidEnter() {
+    // Delay is needed so Ionic finishes its page transition before resize
+    requestAnimationFrame(() => {
+      const calendarApi = this.calendarComponent?.getApi();
+      if (calendarApi) {
+        calendarApi.updateSize();
+        calendarApi.render();
+      }
+    });
+  }
+
   ngOnInit() {
     this.loadEarnings();
+    // Subscribe to watchlist changes
+    this.watchlistSubscription = this.storageService.watchlist$.subscribe(() => {
+      this.loadEarnings();
+    });
+  }
+
+  ngOnDestroy() {
+    // Clean up subscription
+    if (this.watchlistSubscription) {
+      this.watchlistSubscription.unsubscribe();
+    }
   }
 
   async loadEarnings() {
@@ -105,6 +131,11 @@ export class CalendarPage implements OnInit {
             };
           });
           this.calendarOptions.events = this.transformToCalendarEvents(eventsWithNames);
+          // Force calendar to re-render with new events
+          if (this.calendarComponent) {
+            const calendarApi = this.calendarComponent.getApi();
+            calendarApi.refetchEvents();
+          }
           this.loading = false;
         },
         error: (err) => {
@@ -123,6 +154,7 @@ export class CalendarPage implements OnInit {
   transformToCalendarEvents(earnings: EarningsEvent[]): EventInput[] {
     return earnings.map(event => {
       const timeInfo = EARNINGS_TIME_MAP[event.time || 'null'];
+      const logoUrl = this.getLogoUrl(event.symbol);
       return {
         id: `${event.symbol}-${event.date}`,
         title: event.name || event.symbol,
@@ -133,7 +165,8 @@ export class CalendarPage implements OnInit {
           time: event.time,
           timeLabel: timeInfo.label,
           eps: event.eps,
-          epsEstimated: event.epsEstimated
+          epsEstimated: event.epsEstimated,
+          logoUrl: logoUrl
         },
         backgroundColor: this.getColorForTime(event.time),
         borderColor: this.getColorForTime(event.time)
@@ -150,8 +183,72 @@ export class CalendarPage implements OnInit {
     }
   }
 
+  getLogoUrl(symbol: string): string {
+    // Use Yahoo Finance logo API
+    return `https://logo.clearbit.com/${this.getCompanyDomain(symbol)}`;
+  }
+
+  getCompanyDomain(symbol: string): string {
+    // Map common symbols to their domains
+    const domainMap: Record<string, string> = {
+      'AAPL': 'apple.com',
+      'MSFT': 'microsoft.com',
+      'GOOGL': 'google.com',
+      'GOOG': 'google.com',
+      'AMZN': 'amazon.com',
+      'META': 'meta.com',
+      'TSLA': 'tesla.com',
+      'NVDA': 'nvidia.com',
+      'AMD': 'amd.com',
+      'INTC': 'intel.com',
+      'NFLX': 'netflix.com',
+      'DIS': 'disney.com',
+      'PYPL': 'paypal.com',
+      'ABNB': 'airbnb.com',
+      'UBER': 'uber.com',
+      'COIN': 'coinbase.com',
+      'SQ': 'squareup.com',
+      'SPOT': 'spotify.com',
+      'SNOW': 'snowflake.com',
+      'NET': 'cloudflare.com',
+      'BABA': 'alibabagroup.com',
+      'JD': 'jd.com',
+      'BIDU': 'baidu.com',
+      'NIO': 'nio.com',
+      'XPEV': 'xpeng.com',
+      'SAP': 'sap.com',
+      'NKE': 'nike.com',
+      'SBUX': 'starbucks.com',
+      'KO': 'coca-cola.com',
+      'PM': 'pmi.com',
+      'CAT': 'caterpillar.com',
+      'UNH': 'unitedhealthgroup.com',
+      'BLK': 'blackrock.com',
+      'QCOM': 'qualcomm.com',
+      'AVGO': 'broadcom.com',
+      'MRVL': 'marvell.com'
+    };
+    
+    return domainMap[symbol] || `${symbol.toLowerCase()}.com`;
+  }
+
   renderEventContent(arg: any) {
-    return { html: `<div style="font-size: 11px; padding: 2px;">${arg.event.title}</div>` };
+    const logoUrl = arg.event.extendedProps.logoUrl;
+    const title = arg.event.title;
+    
+    return { 
+      html: `
+        <div style="display: flex; align-items: center; gap: 4px; font-size: 11px; padding: 2px;">
+          <img 
+            src="${logoUrl}" 
+            alt="${title}" 
+            style="width: 14px; height: 14px; border-radius: 2px; object-fit: contain; background: white; padding: 1px;"
+            onerror="this.style.display='none'"
+          />
+          <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${title}</span>
+        </div>
+      ` 
+    };
   }
 
   handleEventClick(info: any) {
@@ -164,7 +261,8 @@ export class CalendarPage implements OnInit {
       timeLabel: props.timeLabel,
       eps: props.eps,
       epsEstimated: props.epsEstimated,
-      berlinTime: this.getBerlinTime(props.time)
+      berlinTime: this.getBerlinTime(props.time),
+      logoUrl: props.logoUrl
     };
     this.isModalOpen = true;
   }
