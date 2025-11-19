@@ -5,10 +5,10 @@
 export const environment = {
   production: false,
   fmpApiUrl: 'https://financialmodelingprep.com/api/v3',
-  fmpApiKey: '6S0xwIwuOSnsdpoJEpIN7rf7CZBpJI0p',
+  fmpApiKey: '', // Not used - uses serverless proxy in production
   alphaVantageApiKey: '', // Add your Alpha Vantage API key here (free at alphavantage.co)
-  useAlphaVantage: true, // Set to true to use Alpha Vantage instead of FMP
-  pythonApiUrl: 'http://localhost:5000/api' // Python yfinance API
+  useAlphaVantage: false, // Set to true to use Alpha Vantage instead of FMP
+  pythonApiUrl: '/api' // Serverless API endpoint (uses yahoo-finance2 backend)
 };
 
 /*

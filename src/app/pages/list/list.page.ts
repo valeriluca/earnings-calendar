@@ -91,12 +91,13 @@ export class ListPage implements OnInit, OnDestroy {
       this.earningsService.getEarningsBySymbols(symbols, today, futureDate).subscribe({
         next: (events) => {
           console.log('Earnings events received:', events);
-          // Add company names from watchlist to earnings events
+          // Add company names and logo URLs from watchlist to earnings events
           const eventsWithNames = events.map(event => {
             const stock = watchlist.find(s => s.symbol === event.symbol);
             return {
               ...event,
-              name: stock?.name || event.symbol
+              name: stock?.name || event.symbol,
+              logoUrl: this.getLogoUrl(event.symbol)
             };
           });
           this.earnings = eventsWithNames.sort((a, b) => 
@@ -187,5 +188,54 @@ export class ListPage implements OnInit, OnDestroy {
     const result = new Date(date);
     result.setDate(result.getDate() + days);
     return result;
+  }
+
+  getLogoUrl(symbol: string): string {
+    // Use Clearbit Logo API
+    return `https://logo.clearbit.com/${this.getCompanyDomain(symbol)}`;
+  }
+
+  getCompanyDomain(symbol: string): string {
+    // Map common symbols to their domains
+    const domainMap: Record<string, string> = {
+      'AAPL': 'apple.com',
+      'MSFT': 'microsoft.com',
+      'GOOGL': 'google.com',
+      'GOOG': 'google.com',
+      'AMZN': 'amazon.com',
+      'META': 'meta.com',
+      'TSLA': 'tesla.com',
+      'NVDA': 'nvidia.com',
+      'AMD': 'amd.com',
+      'INTC': 'intel.com',
+      'NFLX': 'netflix.com',
+      'DIS': 'disney.com',
+      'PYPL': 'paypal.com',
+      'ABNB': 'airbnb.com',
+      'UBER': 'uber.com',
+      'COIN': 'coinbase.com',
+      'SQ': 'squareup.com',
+      'SPOT': 'spotify.com',
+      'SNOW': 'snowflake.com',
+      'NET': 'cloudflare.com',
+      'BABA': 'alibabagroup.com',
+      'JD': 'jd.com',
+      'BIDU': 'baidu.com',
+      'NIO': 'nio.com',
+      'XPEV': 'xpeng.com',
+      'SAP': 'sap.com',
+      'NKE': 'nike.com',
+      'SBUX': 'starbucks.com',
+      'KO': 'coca-cola.com',
+      'PM': 'pmi.com',
+      'CAT': 'caterpillar.com',
+      'UNH': 'unitedhealthgroup.com',
+      'BLK': 'blackrock.com',
+      'QCOM': 'qualcomm.com',
+      'AVGO': 'broadcom.com',
+      'MRVL': 'marvell.com'
+    };
+    
+    return domainMap[symbol] || `${symbol.toLowerCase()}.com`;
   }
 }

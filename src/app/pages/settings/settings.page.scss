@@ -18,3 +18,204 @@ ion-searchbar {
   --icon-color: #86868d;
   --border-radius: 8px;
 }
+
+// Card View Grid
+.stock-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  min-height: 100px;
+}
+
+.stock-card {
+  position: relative;
+  border: 1px solid #323236;
+  
+  &:hover {
+    border-color: #4A4A4E;
+  }
+}
+
+.stock-logo-container {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  overflow: visible;
+  background: #2A2A2C;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  
+  &:hover {
+    transform: scale(1.05);
+    
+    .logo-edit-overlay {
+      opacity: 1;
+    }
+  }
+}
+
+.logo-edit-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  border-radius: 8px;
+  z-index: 10;
+  pointer-events: none;
+  
+  .edit-text {
+    font-size: 20px;
+    color: white;
+  }
+}
+
+.stock-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 4px;
+}
+
+.stock-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 4px;
+  border-radius: 8px;
+}
+
+.stock-logo-small-container {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  transition: transform 0.2s ease;
+  
+  &:hover {
+    transform: scale(1.1);
+    
+    .logo-edit-overlay-small {
+      opacity: 1;
+    }
+  }
+}
+
+.logo-edit-overlay-small {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  border-radius: 6px;
+  z-index: 10;
+  pointer-events: none;
+  
+  .edit-text-small {
+    font-size: 14px;
+    color: white;
+  }
+}
+
+.stock-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 4px;
+}
+
+.stock-logo-small {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  object-fit: contain;
+  background: #2A2A2C;
+  padding: 2px;
+}
+
+// Table View
+.stock-table-container {
+  overflow-x: auto;
+  min-height: 100px;
+  border: 1px solid #323236;
+  border-radius: 8px;
+  background: #1E1E20;
+}
+
+.stock-table {
+  border-collapse: collapse;
+  
+  th {
+    padding: 12px 8px;
+    text-align: left;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  
+  td {
+    padding: 12px 8px;
+    white-space: nowrap;
+  }
+  
+  tbody tr {
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+}
+
+// Utility classes
+.text-green-500 {
+  color: #34C759 !important;
+}
+
+.text-red-500 {
+  color: #FF3B30 !important;
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .stock-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .stock-table-container {
+    font-size: 0.875rem;
+  }
+  
+  .stock-table {
+    th, td {
+      padding: 8px 4px;
+      font-size: 0.75rem;
+    }
+  }
+}
+
+@media (max-width: 640px) {
+  .stock-table {
+    th:nth-child(3), 
+    td:nth-child(3),
+    th:nth-child(6), 
+    td:nth-child(6) {
+      display: none; // Hide Name and Market Cap on small screens
+    }
+  }
+}

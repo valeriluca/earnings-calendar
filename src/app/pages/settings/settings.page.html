@@ -80,31 +80,190 @@
         </div>
       </div>
 
-      <!-- Search Watchlist -->
-      <div class="mb-4">
+      <!-- Search and View Toggle -->
+      <div class="mb-4 flex gap-2">
         <ion-searchbar
           [(ngModel)]="searchTerm"
           placeholder="Search watchlist"
-          [debounce]="300">
+          [debounce]="300"
+          class="flex-1">
         </ion-searchbar>
+        <div class="flex gap-1">
+          <p-button-pure 
+            [icon]="'menu-lines'" 
+            (click)="toggleViewMode()" 
+            [hideLabel]="true"
+            [theme]="'dark'"
+            [active]="viewMode === 'card'">
+            Card View
+          </p-button-pure>
+          <p-button-pure 
+            [icon]="'list'" 
+            (click)="toggleViewMode()" 
+            [hideLabel]="true"
+            [theme]="'dark'"
+            [active]="viewMode === 'table'">
+            Table View
+          </p-button-pure>
+        </div>
       </div>
 
-      <!-- Watchlist Items -->
-      <div class="flex flex-wrap gap-2 min-h-[100px] mb-4">
-        <p-tag 
+      <!-- Loading State -->
+      <div *ngIf="loadingStockDetails" class="text-center py-8">
+        <p-text [size]="'medium'" [theme]="'dark'" class="text-[#C9C9CB]">
+          Loading stock details...
+        </p-text>
+      </div>
+
+      <!-- Card View -->
+      <div *ngIf="viewMode === 'card' && !loadingStockDetails" class="stock-grid mb-4">
+        <div 
           *ngFor="let stock of filteredWatchlist()" 
-          [color]="'primary'"
-          [theme]="'dark'"
-          (click)="removeStock(stock.symbol)"
-          class="cursor-pointer">
-          {{ stock.symbol }}
-        </p-tag>
+          class="stock-card bg-[#1E1E20] rounded-lg p-4 hover:bg-[#2A2A2C] transition-colors">
+          <div class="flex items-start gap-3">
+            <div class="stock-logo-container" (click)="openLogoUpload(stock)">
+              <img 
+                [src]="stock.logo || getDefaultLogo(stock.symbol)" 
+                [alt]="stock.symbol"
+                class="stock-logo"
+                (error)="handleLogoError($event, stock)">
+              <div class="logo-edit-overlay">
+                <span class="edit-text">📷</span>
+              </div>
+            </div>
+            <div class="flex-1 min-w-0" (click)="removeStock(stock.symbol)" style="cursor: pointer;">
+              <div class="flex items-start justify-between mb-1">
+                <div>
+                  <p-text [size]="'medium'" [theme]="'dark'" class="font-semibold block" style="padding: 0;">
+                    {{ stock.symbol }}
+                  </p-text>
+                  <p-text [size]="'x-small'" [theme]="'dark'" class="text-[#86868B] block" style="padding: 0;">
+                    {{ stock.name || 'Unknown Company' }}
+                  </p-text>
+                </div>
+                <p-icon [name]="'close'" [size]="'x-small'" [theme]="'dark'" class="text-[#86868B]"></p-icon>
+              </div>
+              
+              <div class="mt-3 space-y-1">
+                <div class="flex justify-between items-center">
+                  <p-text [size]="'x-small'" [theme]="'dark'" class="text-[#86868B]" style="padding: 0;">
+                    Price
+                  </p-text>
+                  <p-text [size]="'small'" [theme]="'dark'" style="padding: 0;">
+                    {{ formatPrice(stock.price) }}
+                  </p-text>
+                </div>
+                
+                <div class="flex justify-between items-center">
+                  <p-text [size]="'x-small'" [theme]="'dark'" class="text-[#86868B]" style="padding: 0;">
+                    Change
+                  </p-text>
+                  <p-text [size]="'x-small'" [theme]="'dark'" [class]="getChangeClass(stock.change)" style="padding: 0;">
+                    {{ formatChange(stock.change, stock.changePercent) }}
+                  </p-text>
+                </div>
+                
+                <div class="flex justify-between items-center">
+                  <p-text [size]="'x-small'" [theme]="'dark'" class="text-[#86868B]" style="padding: 0;">
+                    Market Cap
+                  </p-text>
+                  <p-text [size]="'x-small'" [theme]="'dark'" style="padding: 0;">
+                    {{ formatMarketCap(stock.marketCap) }}
+                  </p-text>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
         
-        <div *ngIf="watchlist.length === 0" class="w-full text-center py-8">
+        <div *ngIf="filteredWatchlist().length === 0" class="col-span-full text-center py-8">
           <p-text [size]="'medium'" [theme]="'dark'" class="text-[#C9C9CB]" style="padding: 4px 0;">
-            No stocks in watchlist. Add some symbols above!
+            {{ searchTerm ? 'No stocks found' : 'No stocks in watchlist. Add some symbols above!' }}
           </p-text>
         </div>
+      </div>
+
+      <!-- Table View -->
+      <div *ngIf="viewMode === 'table' && !loadingStockDetails" class="stock-table-container mb-4">
+        <table class="stock-table w-full">
+          <thead>
+            <tr class="border-b border-[#3A3A3C]">
+              <th class="text-left py-3 px-2">
+                <p-text [size]="'x-small'" [theme]="'dark'" class="text-[#86868B] font-semibold">Logo</p-text>
+              </th>
+              <th class="text-left py-3 px-2">
+                <p-text [size]="'x-small'" [theme]="'dark'" class="text-[#86868B] font-semibold">Symbol</p-text>
+              </th>
+              <th class="text-left py-3 px-2">
+                <p-text [size]="'x-small'" [theme]="'dark'" class="text-[#86868B] font-semibold">Name</p-text>
+              </th>
+              <th class="text-right py-3 px-2">
+                <p-text [size]="'x-small'" [theme]="'dark'" class="text-[#86868B] font-semibold">Price</p-text>
+              </th>
+              <th class="text-right py-3 px-2">
+                <p-text [size]="'x-small'" [theme]="'dark'" class="text-[#86868B] font-semibold">Change</p-text>
+              </th>
+              <th class="text-right py-3 px-2">
+                <p-text [size]="'x-small'" [theme]="'dark'" class="text-[#86868B] font-semibold">Market Cap</p-text>
+              </th>
+              <th class="text-center py-3 px-2">
+                <p-text [size]="'x-small'" [theme]="'dark'" class="text-[#86868B] font-semibold">Action</p-text>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr 
+              *ngFor="let stock of filteredWatchlist()" 
+              class="border-b border-[#2A2A2C] hover:bg-[#2A2A2C] transition-colors">
+              <td class="py-3 px-2">
+                <div class="stock-logo-small-container" (click)="openLogoUpload(stock)">
+                  <img 
+                    [src]="stock.logo || getDefaultLogo(stock.symbol)" 
+                    [alt]="stock.symbol"
+                    class="stock-logo-small"
+                    (error)="handleLogoError($event, stock)">
+                  <div class="logo-edit-overlay-small">
+                    <span class="edit-text-small">📷</span>
+                  </div>
+                </div>
+              </td>
+              <td class="py-3 px-2">
+                <p-text [size]="'small'" [theme]="'dark'" class="font-semibold">{{ stock.symbol }}</p-text>
+              </td>
+              <td class="py-3 px-2">
+                <p-text [size]="'x-small'" [theme]="'dark'" class="text-[#C9C9CB]">{{ stock.name || 'Unknown' }}</p-text>
+              </td>
+              <td class="py-3 px-2 text-right">
+                <p-text [size]="'small'" [theme]="'dark'">{{ formatPrice(stock.price) }}</p-text>
+              </td>
+              <td class="py-3 px-2 text-right">
+                <p-text [size]="'x-small'" [theme]="'dark'" [class]="getChangeClass(stock.change)">
+                  {{ formatChange(stock.change, stock.changePercent) }}
+                </p-text>
+              </td>
+              <td class="py-3 px-2 text-right">
+                <p-text [size]="'x-small'" [theme]="'dark'" class="text-[#C9C9CB]">{{ formatMarketCap(stock.marketCap) }}</p-text>
+              </td>
+              <td class="py-3 px-2 text-center">
+                <p-button-pure 
+                  [icon]="'close'" 
+                  (click)="removeStock(stock.symbol)" 
+                  [hideLabel]="true"
+                  [size]="'small'"
+                  [theme]="'dark'">
+                  Remove
+                </p-button-pure>
+              </td>
+            </tr>
+            <tr *ngIf="filteredWatchlist().length === 0">
+              <td colspan="7" class="text-center py-8">
+                <p-text [size]="'medium'" [theme]="'dark'" class="text-[#C9C9CB]">
+                  {{ searchTerm ? 'No stocks found' : 'No stocks in watchlist. Add some symbols above!' }}
+                </p-text>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
       <p-button 
@@ -117,7 +276,7 @@
       </p-button>
 
       <p-text [size]="'x-small'" [theme]="'dark'" class="block mt-4 text-[#C9C9CB]" style="padding: 4px 0; line-height: 1.6;">
-        Tap the × button on a stock chip to remove it from your watchlist.
+        {{ viewMode === 'card' ? 'Click on the card text to remove a stock. Click the logo to upload a custom image.' : 'Click the logo to upload a custom image. Use the × button to remove stocks from your watchlist.' }}
       </p-text>
     </div>
 
@@ -135,3 +294,11 @@
 
   </div>
 </ion-content>
+
+<!-- Hidden file input for logo upload -->
+<input 
+  type="file" 
+  #logoFileInput 
+  accept="image/*" 
+  style="display: none;" 
+  (change)="onLogoFileSelected($event)">

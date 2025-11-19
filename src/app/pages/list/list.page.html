@@ -49,9 +49,18 @@
            [class.border-[#8B1538]]="isToday(event.date)">
         <div class="flex justify-between items-start">
           <div class="flex-1">
-            <div class="flex items-center gap-2 mb-2">
-              <p-heading [size]="'medium'" [theme]="'dark'">{{ event.name || event.symbol }}</p-heading>
-              <p-tag *ngIf="isToday(event.date)" [color]="'notification-error'" [theme]="'dark'">TODAY</p-tag>
+            <div class="flex items-center gap-3 mb-2">
+              <img 
+                *ngIf="event.logoUrl"
+                [src]="event.logoUrl" 
+                [alt]="event.name || event.symbol"
+                style="width: 40px; height: 40px; border-radius: 8px; object-fit: contain; background: white; padding: 4px; flex-shrink: 0;"
+                (error)="$event.target.style.display='none'"
+              />
+              <div class="flex items-center gap-2 flex-wrap">
+                <p-heading [size]="'medium'" [theme]="'dark'">{{ event.name || event.symbol }}</p-heading>
+                <p-tag *ngIf="isToday(event.date)" [color]="'notification-error'" [theme]="'dark'">TODAY</p-tag>
+              </div>
             </div>
             <p-text [size]="'small'" [theme]="'dark'" class="block mb-1 text-[#C9C9CB]" style="padding: 4px 0;">
               {{ formatDisplayDate(event.date) }}

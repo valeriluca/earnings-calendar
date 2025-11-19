@@ -2,6 +2,14 @@ export interface Stock {
   symbol: string;
   name?: string;
   addedAt?: number; // timestamp
+  logo?: string;
+  customLogo?: boolean; // indicates if logo was set by user
+  marketCap?: number;
+  price?: number;
+  change?: number;
+  changePercent?: number;
+  sector?: string;
+  industry?: string;
 }
 
 export const DEFAULT_STOCKS: Stock[] = [

@@ -70,6 +70,15 @@ export class StorageService {
     await this.saveWatchlist(updatedList);
   }
 
+  async updateStock(stock: Stock): Promise<void> {
+    const watchlist = await this.getWatchlist();
+    const index = watchlist.findIndex(s => s.symbol === stock.symbol);
+    if (index !== -1) {
+      watchlist[index] = { ...watchlist[index], ...stock };
+      await this.saveWatchlist(watchlist);
+    }
+  }
+
   async resetWatchlist(): Promise<void> {
     await this.saveWatchlist(DEFAULT_STOCKS);
   }
