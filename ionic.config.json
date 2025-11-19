@@ -1,7 +1,0 @@
-{
-  "name": "earnings-calendar",
-  "integrations": {
-    "capacitor": {}
-  },
-  "type": "angular-standalone"
-}

@@ -15,7 +15,7 @@ bootstrapApplication(AppComponent, {
     provideRouter(routes, withPreloading(PreloadAllModules)),
     provideHttpClient(),
     provideServiceWorker('ngsw-worker.js', {
-      enabled: !isDevMode(),
+      enabled: true, // Enable in dev mode for push notifications
       registrationStrategy: 'registerWhenStable:30000'
     }),
   ],

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
 import { PorscheDesignSystemModule } from '@porsche-design-system/components-angular';
-import { NotificationService } from './services/notification.service';
+import { WebPushService } from './services/web-push.service';
 
 @Component({
   selector: 'app-root',
@@ -9,12 +9,10 @@ import { NotificationService } from './services/notification.service';
   imports: [IonApp, IonRouterOutlet, PorscheDesignSystemModule],
 })
 export class AppComponent implements OnInit {
-  constructor(private notificationService: NotificationService) {}
+  constructor(private webPushService: WebPushService) {}
 
   async ngOnInit() {
-    // Initialize notifications
-    await this.notificationService.initialize();
-    // Create notification channel for Android
-    await this.notificationService.createNotificationChannel();
+    // Initialize web push notifications
+    await this.webPushService.initialize();
   }
 }

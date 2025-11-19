@@ -26,14 +26,47 @@
           </p-switch>
         </div>
 
-        <div *ngIf="notificationSettings.enabled" class="pt-2 border-t border-[#3A3A3C]">
-          <p-text [size]="'small'" [theme]="'dark'" class="block mb-2 text-[#C9C9CB]" style="padding: 4px 0;">Notification Time</p-text>
-          <ion-input
-            type="time"
-            [value]="notificationSettings.notificationTime"
-            (ionChange)="updateNotificationTime($event)"
-            class="custom-input">
-          </ion-input>
+        <div *ngIf="notificationSettings.enabled" class="pt-2 border-t border-[#3A3A3C] space-y-4">
+          <!-- Daily Earnings at 6 AM -->
+          <div class="flex items-center justify-between py-2">
+            <div>
+              <p-text [size]="'medium'" [theme]="'dark'">Daily Earnings (6 AM)</p-text>
+              <p-text [size]="'x-small'" [theme]="'dark'" class="block text-[#86868B]" style="padding: 4px 0;">
+                Get earnings scheduled for today every morning
+              </p-text>
+            </div>
+            <p-switch 
+              [checked]="notificationSettings.dailyEarningsEnabled" 
+              (update)="toggleDailyEarnings($event)"
+              [theme]="'dark'">
+            </p-switch>
+          </div>
+
+          <!-- Change Detection -->
+          <div class="flex items-center justify-between py-2">
+            <div>
+              <p-text [size]="'medium'" [theme]="'dark'">Change Detection</p-text>
+              <p-text [size]="'x-small'" [theme]="'dark'" class="block text-[#86868B]" style="padding: 4px 0;">
+                Alert when earnings change in next 7 days
+              </p-text>
+            </div>
+            <p-switch 
+              [checked]="notificationSettings.changeDetectionEnabled" 
+              (update)="toggleChangeDetection($event)"
+              [theme]="'dark'">
+            </p-switch>
+          </div>
+
+          <!-- Notification Time -->
+          <div *ngIf="notificationSettings.dailyEarningsEnabled" class="pt-2 border-t border-[#3A3A3C]">
+            <p-text [size]="'small'" [theme]="'dark'" class="block mb-2 text-[#C9C9CB]" style="padding: 4px 0;">Notification Time</p-text>
+            <ion-input
+              type="time"
+              [value]="notificationSettings.notificationTime"
+              (ionChange)="updateNotificationTime($event)"
+              class="custom-input">
+            </ion-input>
+          </div>
         </div>
 
         <div *ngIf="notificationSettings.enabled" class="pt-2">
@@ -48,7 +81,9 @@
       </div>
 
       <p-text [size]="'x-small'" [theme]="'dark'" class="block mt-4 text-[#C9C9CB]" style="padding: 4px 0; line-height: 1.6;">
-        <strong>Note:</strong> Notifications work best on native apps. Web app notifications have limited support on mobile browsers.
+        <strong>📱 iOS Users:</strong> For push notifications to work on iPhone, you must add this app to your Home Screen first. Tap the Share button in Safari, then "Add to Home Screen".<br><br>
+        <strong>🤖 Android Users:</strong> Notifications work directly in Chrome, Firefox, and Edge browsers. You can also install the app for a better experience.<br><br>
+        <strong>💻 Desktop:</strong> Notifications work in all modern browsers.
       </p-text>
     </div>
 

@@ -2,12 +2,14 @@
   "name": "Earnings Calendar",
   "short_name": "Earnings",
   "description": "Mobile-first earnings calendar app for tracking upcoming earnings reports",
-  "theme_color": "#3880ff",
-  "background_color": "#ffffff",
+  "theme_color": "#000000",
+  "background_color": "#000000",
   "display": "standalone",
-  "scope": "./",
-  "start_url": "./",
+  "scope": "/",
+  "start_url": "/",
   "orientation": "portrait-primary",
+  "categories": ["finance", "business", "productivity"],
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "icons/icon-72x72.png",

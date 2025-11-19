@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Preferences } from '@capacitor/preferences';
 import { Stock, DEFAULT_STOCKS } from '../models/stock.model';
 import { NotificationSettings, DEFAULT_NOTIFICATION_SETTINGS } from '../models/notification-settings.model';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -7,7 +6,8 @@ import { BehaviorSubject, Observable } from 'rxjs';
 const STORAGE_KEYS = {
   WATCHLIST: 'watchlist',
   NOTIFICATION_SETTINGS: 'notification_settings',
-  LAST_SYNC: 'last_sync'
+  LAST_SYNC: 'last_sync',
+  LAST_KNOWN_EARNINGS: 'last_known_earnings'
 };
 
 @Injectable({
@@ -26,10 +26,36 @@ export class StorageService {
     this.watchlistSubject.next(watchlist);
   }
 
+  // Helper methods for localStorage
+  private getItem(key: string): string | null {
+    try {
+      return localStorage.getItem(key);
+    } catch (error) {
+      console.error('Error reading from localStorage:', error);
+      return null;
+    }
+  }
+
+  private setItem(key: string, value: string): void {
+    try {
+      localStorage.setItem(key, value);
+    } catch (error) {
+      console.error('Error writing to localStorage:', error);
+    }
+  }
+
+  private removeItem(key: string): void {
+    try {
+      localStorage.removeItem(key);
+    } catch (error) {
+      console.error('Error removing from localStorage:', error);
+    }
+  }
+
   // Watchlist methods
   async getWatchlist(): Promise<Stock[]> {
     try {
-      const { value } = await Preferences.get({ key: STORAGE_KEYS.WATCHLIST });
+      const value = this.getItem(STORAGE_KEYS.WATCHLIST);
       if (value) {
         return JSON.parse(value);
       }
@@ -44,10 +70,7 @@ export class StorageService {
 
   async saveWatchlist(stocks: Stock[]): Promise<void> {
     try {
-      await Preferences.set({
-        key: STORAGE_KEYS.WATCHLIST,
-        value: JSON.stringify(stocks)
-      });
+      this.setItem(STORAGE_KEYS.WATCHLIST, JSON.stringify(stocks));
       this.watchlistSubject.next(stocks);
     } catch (error) {
       console.error('Error saving watchlist:', error);
@@ -86,7 +109,7 @@ export class StorageService {
   // Notification settings
   async getNotificationSettings(): Promise<NotificationSettings> {
     try {
-      const { value } = await Preferences.get({ key: STORAGE_KEYS.NOTIFICATION_SETTINGS });
+      const value = this.getItem(STORAGE_KEYS.NOTIFICATION_SETTINGS);
       if (value) {
         return JSON.parse(value);
       }
@@ -99,10 +122,7 @@ export class StorageService {
 
   async saveNotificationSettings(settings: NotificationSettings): Promise<void> {
     try {
-      await Preferences.set({
-        key: STORAGE_KEYS.NOTIFICATION_SETTINGS,
-        value: JSON.stringify(settings)
-      });
+      this.setItem(STORAGE_KEYS.NOTIFICATION_SETTINGS, JSON.stringify(settings));
     } catch (error) {
       console.error('Error saving notification settings:', error);
     }
@@ -111,7 +131,7 @@ export class StorageService {
   // Last sync timestamp
   async getLastSync(): Promise<number | null> {
     try {
-      const { value } = await Preferences.get({ key: STORAGE_KEYS.LAST_SYNC });
+      const value = this.getItem(STORAGE_KEYS.LAST_SYNC);
       return value ? parseInt(value, 10) : null;
     } catch (error) {
       console.error('Error getting last sync:', error);
@@ -121,10 +141,7 @@ export class StorageService {
 
   async setLastSync(timestamp: number): Promise<void> {
     try {
-      await Preferences.set({
-        key: STORAGE_KEYS.LAST_SYNC,
-        value: timestamp.toString()
-      });
+      this.setItem(STORAGE_KEYS.LAST_SYNC, timestamp.toString());
     } catch (error) {
       console.error('Error setting last sync:', error);
     }
@@ -133,10 +150,28 @@ export class StorageService {
   // Clear all data
   async clearAll(): Promise<void> {
     try {
-      await Preferences.clear();
+      localStorage.clear();
       this.watchlistSubject.next([]);
     } catch (error) {
       console.error('Error clearing storage:', error);
+    }
+  }
+
+  // Last known earnings for change detection
+  async getLastKnownEarnings(): Promise<string | null> {
+    try {
+      return this.getItem(STORAGE_KEYS.LAST_KNOWN_EARNINGS);
+    } catch (error) {
+      console.error('Error getting last known earnings:', error);
+      return null;
+    }
+  }
+
+  async saveLastKnownEarnings(earningsHash: string): Promise<void> {
+    try {
+      this.setItem(STORAGE_KEYS.LAST_KNOWN_EARNINGS, earningsHash);
+    } catch (error) {
+      console.error('Error saving last known earnings:', error);
     }
   }
 }

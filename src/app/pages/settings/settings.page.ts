@@ -14,7 +14,7 @@ import {
 } from '@ionic/angular/standalone';
 import { PorscheDesignSystemModule } from '@porsche-design-system/components-angular';
 import { StorageService } from '../../services/storage.service';
-import { NotificationService } from '../../services/notification.service';
+import { WebPushService } from '../../services/web-push.service';
 import { Stock, DEFAULT_STOCKS } from '../../models/stock.model';
 import { NotificationSettings } from '../../models/notification-settings.model';
 import { addIcons } from 'ionicons';
@@ -44,7 +44,9 @@ export class SettingsPage implements OnInit {
   watchlist: Stock[] = [];
   notificationSettings: NotificationSettings = {
     enabled: true,
-    notificationTime: '08:00'
+    notificationTime: '06:00',
+    changeDetectionEnabled: true,
+    dailyEarningsEnabled: true
   };
   newSymbol = '';
   searchTerm = '';
@@ -54,7 +56,7 @@ export class SettingsPage implements OnInit {
 
   constructor(
     private storageService: StorageService,
-    private notificationService: NotificationService,
+    private webPushService: WebPushService,
     private alertController: AlertController,
     private toastController: ToastController,
     private http: HttpClient
@@ -495,9 +497,14 @@ export class SettingsPage implements OnInit {
     await this.storageService.saveNotificationSettings(this.notificationSettings);
 
     if (this.notificationSettings.enabled) {
-      const hasPermission = await this.notificationService.requestPermissions();
+      const hasPermission = await this.webPushService.requestPermission();
       if (hasPermission) {
-        await this.notificationService.scheduleDailyNotification(this.notificationSettings.notificationTime);
+        if (this.notificationSettings.dailyEarningsEnabled) {
+          await this.webPushService.scheduleDailyNotification(this.notificationSettings.notificationTime);
+        }
+        if (this.notificationSettings.changeDetectionEnabled) {
+          await this.webPushService.startChangeDetection();
+        }
         await this.showToast('Notifications enabled', 'success');
       } else {
         this.notificationSettings.enabled = false;
@@ -505,8 +512,39 @@ export class SettingsPage implements OnInit {
         await this.showToast('Notification permission denied', 'danger');
       }
     } else {
-      await this.notificationService.cancelDailyNotification();
+      await this.webPushService.cancelDailyNotification();
+      this.webPushService.stopChangeDetection();
       await this.showToast('Notifications disabled', 'success');
+    }
+  }
+
+  async toggleDailyEarnings(event: any) {
+    this.notificationSettings.dailyEarningsEnabled = event.detail.checked;
+    await this.storageService.saveNotificationSettings(this.notificationSettings);
+
+    if (this.notificationSettings.enabled) {
+      if (this.notificationSettings.dailyEarningsEnabled) {
+        await this.webPushService.scheduleDailyNotification(this.notificationSettings.notificationTime);
+        await this.showToast('Daily earnings notifications enabled', 'success');
+      } else {
+        await this.webPushService.cancelDailyNotification();
+        await this.showToast('Daily earnings notifications disabled', 'success');
+      }
+    }
+  }
+
+  async toggleChangeDetection(event: any) {
+    this.notificationSettings.changeDetectionEnabled = event.detail.checked;
+    await this.storageService.saveNotificationSettings(this.notificationSettings);
+
+    if (this.notificationSettings.enabled) {
+      if (this.notificationSettings.changeDetectionEnabled) {
+        await this.webPushService.startChangeDetection();
+        await this.showToast('Change detection enabled', 'success');
+      } else {
+        this.webPushService.stopChangeDetection();
+        await this.showToast('Change detection disabled', 'success');
+      }
     }
   }
 
@@ -514,21 +552,21 @@ export class SettingsPage implements OnInit {
     this.notificationSettings.notificationTime = event.detail.value;
     await this.storageService.saveNotificationSettings(this.notificationSettings);
     
-    if (this.notificationSettings.enabled) {
-      await this.notificationService.scheduleDailyNotification(this.notificationSettings.notificationTime);
+    if (this.notificationSettings.enabled && this.notificationSettings.dailyEarningsEnabled) {
+      await this.webPushService.scheduleDailyNotification(this.notificationSettings.notificationTime);
       await this.showToast('Notification time updated', 'success');
     }
   }
 
   async testNotification() {
-    const watchlist = await this.storageService.getWatchlist();
-    if (watchlist.length === 0) {
-      await this.showToast('Add stocks to watchlist first', 'warning');
-      return;
+    try {
+      console.log('Test notification button clicked');
+      await this.webPushService.testNotification();
+      await this.showToast('Test notification sent! Check your notifications.', 'success');
+    } catch (error: any) {
+      console.error('Test notification error:', error);
+      await this.showToast(error.message || 'Failed to send notification. Check permissions.', 'danger');
     }
-
-    await this.notificationService.fetchAndNotifyTodayEarnings();
-    await this.showToast('Test notification sent', 'success');
   }
 
   filteredWatchlist() {
