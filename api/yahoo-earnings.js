@@ -112,16 +112,20 @@ async function fetchSymbolEarnings(symbol, fromDate, toDate) {
       }
     }
     
+    // Extract exact time (format as HH:MM in ET timezone)
+    const exactTime = formatTime(earningsDate);
+    
     // Format the earnings event
     const event = {
       symbol: symbol,
       date: formatDate(earningsDate),
       time: guessEarningsTime(earningsDate),
+      exactTime: exactTime,
       epsEstimated: epsEstimated,
       fullDate: earningsDate.toISOString()
     };
     
-    console.log(`✓ ${symbol}: ${event.date} ${event.time || ''}`);
+    console.log(`✓ ${symbol}: ${event.date} ${event.time || ''} (${exactTime} ET)`);
     return event;
     
   } catch (error) {
@@ -162,6 +166,21 @@ function formatDate(date) {
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
+}
+
+/**
+ * Format time to HH:MM (in ET timezone representation)
+ */
+function formatTime(date) {
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  
+  // If time is midnight (00:00), it's likely a placeholder - no specific time
+  if (hours === 0 && minutes === 0) {
+    return null;
+  }
+  
+  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
 }
 
 /**

@@ -73,18 +73,24 @@
             <div class="w-4 h-4 rounded" style="background-color: #4B5563;"></div>
             <p-text [size]="'small'" [theme]="'dark'">Time TBD</p-text>
           </div>
+          <div class="flex items-center gap-3">
+            <div class="w-4 h-4 rounded" style="background-color: #1E3A5F; border: 1px solid #2563EB;"></div>
+            <p-text [size]="'small'" [theme]="'dark'">🏛️ Market Holiday</p-text>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Earnings Detail Modal -->
+  <!-- Event Detail Modal -->
   <ion-modal [isOpen]="isModalOpen" (didDismiss)="closeModal()">
     <ng-template>
       <ion-header>
         <ion-toolbar>
           <ion-title>
-            <p-heading [size]="'medium'" [theme]="'dark'">Earnings Details</p-heading>
+            <p-heading [size]="'medium'" [theme]="'dark'">
+              {{ selectedEvent?.type === 'holiday' ? 'Market Holiday' : 'Earnings Details' }}
+            </p-heading>
           </ion-title>
           <ion-buttons slot="end">
             <ion-button (click)="closeModal()">
@@ -94,7 +100,8 @@
         </ion-toolbar>
       </ion-header>
       <ion-content class="ion-padding">
-        <div *ngIf="selectedEvent" class="space-y-6">
+        <!-- Earnings Event Modal Content -->
+        <div *ngIf="selectedEvent && selectedEvent.type !== 'holiday'" class="space-y-6">
           <!-- Company Info -->
           <div class="bg-transparent rounded-lg p-8 shadow-lg modal-card-blur">
             <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
@@ -129,19 +136,35 @@
 
             <div style="margin-bottom: 16px;">
               <p-text [size]="'small'" [theme]="'dark'" class="block mb-1 text-[#C9C9CB]" style="padding: 4px 0;">
-                Reporting Time
+                Earnings Call Time
               </p-text>
-              <p-text [size]="'medium'" [theme]="'dark'" style="padding: 4px 0;">
-                {{ selectedEvent.timeLabel }}
+              <div style="display: flex; align-items: center; gap: 8px; padding: 4px 0;">
+                <p-text [size]="'medium'" [theme]="'dark'">
+                  {{ selectedEvent.timeLabel }}
+                </p-text>
+                <span *ngIf="selectedEvent.exactTime" style="background: rgba(139, 21, 56, 0.3); padding: 4px 10px; border-radius: 999px; font-size: 13px; color: #fff; font-weight: 500;">
+                  🕐 {{ selectedEvent.exactTime }} ET
+                </span>
+              </div>
+            </div>
+
+            <div style="margin-bottom: 16px;">
+              <p-text [size]="'small'" [theme]="'dark'" class="block mb-1 text-[#C9C9CB]" style="padding: 4px 0;">
+                Berlin Time
+              </p-text>
+              <p-text [size]="'medium'" [theme]="'dark'" class="font-semibold" style="padding: 4px 0;">
+                <span *ngIf="selectedEvent.exactBerlinTime" style="background: rgba(37, 99, 235, 0.3); padding: 4px 10px; border-radius: 999px; font-size: 13px; font-weight: 500;">
+                  🇩🇪 {{ selectedEvent.exactBerlinTime }}
+                </span>
+                <span *ngIf="!selectedEvent.exactBerlinTime">
+                  {{ selectedEvent.berlinTime }}
+                </span>
               </p-text>
             </div>
 
-            <div>
-              <p-text [size]="'small'" [theme]="'dark'" class="block mb-1 text-[#C9C9CB]" style="padding: 4px 0;">
-                Berlin Time (Approximate)
-              </p-text>
-              <p-text [size]="'medium'" [theme]="'dark'" class="font-semibold" style="padding: 4px 0;">
-                {{ selectedEvent.berlinTime }}
+            <div *ngIf="!selectedEvent.exactTime">
+              <p-text [size]="'x-small'" [theme]="'dark'" class="text-[#C9C9CB]" style="padding: 4px 0; font-style: italic;">
+                Exact time not yet announced
               </p-text>
             </div>
           </div>
@@ -174,8 +197,64 @@
           <!-- Info Note -->
           <div class="bg-transparent rounded-lg p-6 shadow-lg modal-card-blur">
             <p-text [size]="'x-small'" [theme]="'dark'" class="text-[#C9C9CB]" style="padding: 4px 0; line-height: 1.6;">
-              <strong>Note:</strong> Berlin times are approximate and based on standard US market hours. 
-              Actual earnings release times may vary. CET/CEST adjusts for daylight saving time.
+              <strong>Note:</strong> Times shown in ET (Eastern Time) are converted to Berlin time (CET/CEST). 
+              When exact call times are available, they are displayed with 🕐. Otherwise, approximate times are shown based on BMO/AMC/DMT classification.
+            </p-text>
+          </div>
+        </div>
+
+        <!-- Holiday Event Modal Content -->
+        <div *ngIf="selectedEvent && selectedEvent.type === 'holiday'" class="space-y-6">
+          <!-- Holiday Info -->
+          <div class="bg-transparent rounded-lg p-8 shadow-lg modal-card-blur">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+              <div style="font-size: 48px;">🏛️</div>
+              <div>
+                <p-heading [size]="'large'" [theme]="'dark'" class="mb-2" style="padding: 4px 0;">
+                  {{ selectedEvent.title }}
+                </p-heading>
+                <p-text [size]="'medium'" [theme]="'dark'" class="text-[#C9C9CB]" style="padding: 4px 0;">
+                  Market Holiday
+                </p-text>
+              </div>
+            </div>
+          </div>
+
+          <!-- Date Info -->
+          <div class="bg-transparent rounded-lg p-8 shadow-lg modal-card-blur">
+            <p-text [size]="'small'" [theme]="'dark'" class="block mb-1 text-[#C9C9CB]" style="padding: 4px 0;">
+              Date
+            </p-text>
+            <p-text [size]="'medium'" [theme]="'dark'" style="padding: 4px 0;">
+              {{ formatModalDate(selectedEvent.date) }}
+            </p-text>
+          </div>
+
+          <!-- Closed Markets -->
+          <div class="bg-transparent rounded-lg p-8 shadow-lg modal-card-blur">
+            <p-heading [size]="'medium'" [theme]="'dark'" class="mb-4" style="padding: 4px 0;">
+              Closed Markets
+            </p-heading>
+            <div class="market-list">
+              <div *ngFor="let market of selectedEvent.markets" class="market-item" style="display: flex; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                <span style="font-size: 24px;">{{ getMarketInfo(market).flag }}</span>
+                <div>
+                  <p-text [size]="'medium'" [theme]="'dark'" style="display: block;">
+                    {{ market }}
+                  </p-text>
+                  <p-text [size]="'small'" [theme]="'dark'" class="text-[#C9C9CB]">
+                    {{ getMarketInfo(market).name }} ({{ getMarketInfo(market).country }})
+                  </p-text>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Info Note -->
+          <div class="bg-transparent rounded-lg p-6 shadow-lg modal-card-blur">
+            <p-text [size]="'x-small'" [theme]="'dark'" class="text-[#C9C9CB]" style="padding: 4px 0; line-height: 1.6;">
+              <strong>Note:</strong> Markets listed above will be closed for trading on this date. 
+              Trading may still be possible on other exchanges. Always verify with your broker.
             </p-text>
           </div>
         </div>

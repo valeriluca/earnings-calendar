@@ -19,7 +19,9 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { EarningsService } from '../../services/earnings.service';
 import { StorageService } from '../../services/storage.service';
+import { MarketHolidaysService } from '../../services/market-holidays.service';
 import { EarningsEvent, EARNINGS_TIME_MAP } from '../../models/earnings-event.model';
+import { MarketHoliday, MARKET_INFO } from '../../models/market-holiday.model';
 import { addIcons } from 'ionicons';
 import { refreshOutline, settingsOutline } from 'ionicons/icons';
 import { Router } from '@angular/router';
@@ -72,6 +74,7 @@ export class CalendarPage implements OnInit, OnDestroy {
   constructor(
     private earningsService: EarningsService,
     private storageService: StorageService,
+    private marketHolidaysService: MarketHolidaysService,
     private router: Router
   ) {
     addIcons({ refreshOutline, settingsOutline });
@@ -111,14 +114,23 @@ export class CalendarPage implements OnInit, OnDestroy {
       const watchlist = await this.storageService.getWatchlist();
       const symbols = watchlist.map(s => s.symbol);
 
+      const today = new Date();
+      const futureDate = this.addDays(today, 60);
+
+      // Load market holidays for the date range
+      const holidays = this.marketHolidaysService.getHolidaysInRange(today, futureDate);
+      const holidayEvents = this.transformHolidaysToCalendarEvents(holidays);
+
       if (symbols.length === 0) {
-        this.error = 'No stocks in watchlist. Add stocks in Settings.';
+        // Still show holidays even if no stocks in watchlist
+        this.calendarOptions.events = holidayEvents;
+        if (this.calendarComponent) {
+          const calendarApi = this.calendarComponent.getApi();
+          calendarApi.refetchEvents();
+        }
         this.loading = false;
         return;
       }
-
-      const today = new Date();
-      const futureDate = this.addDays(today, 60);
 
       this.earningsService.getEarningsBySymbols(symbols, today, futureDate).subscribe({
         next: (events) => {
@@ -130,7 +142,9 @@ export class CalendarPage implements OnInit, OnDestroy {
               name: stock?.name || event.symbol
             };
           });
-          this.calendarOptions.events = this.transformToCalendarEvents(eventsWithNames);
+          const earningsEvents = this.transformToCalendarEvents(eventsWithNames);
+          // Combine earnings and holiday events
+          this.calendarOptions.events = [...earningsEvents, ...holidayEvents];
           // Force calendar to re-render with new events
           if (this.calendarComponent) {
             const calendarApi = this.calendarComponent.getApi();
@@ -139,6 +153,12 @@ export class CalendarPage implements OnInit, OnDestroy {
           this.loading = false;
         },
         error: (err) => {
+          // Still show holidays even if earnings fail
+          this.calendarOptions.events = holidayEvents;
+          if (this.calendarComponent) {
+            const calendarApi = this.calendarComponent.getApi();
+            calendarApi.refetchEvents();
+          }
           this.error = 'Failed to load earnings data. Please try again.';
           this.loading = false;
           console.error(err);
@@ -160,18 +180,72 @@ export class CalendarPage implements OnInit, OnDestroy {
         title: event.name || event.symbol,
         start: event.date,
         extendedProps: {
+          type: 'earnings',
           symbol: event.symbol,
           name: event.name,
           time: event.time,
           timeLabel: timeInfo.label,
+          exactTime: event.exactTime,
           eps: event.eps,
           epsEstimated: event.epsEstimated,
-          logoUrl: logoUrl
+          logoUrl: logoUrl,
+          fullDate: event.fullDate
         },
         backgroundColor: this.getColorForTime(event.time),
         borderColor: this.getColorForTime(event.time)
       };
     });
+  }
+
+  transformHolidaysToCalendarEvents(holidays: MarketHoliday[]): EventInput[] {
+    // Group holidays by date to consolidate multiple holidays on the same day
+    const holidaysByDate = new Map<string, MarketHoliday[]>();
+    
+    holidays.forEach(holiday => {
+      if (!holidaysByDate.has(holiday.date)) {
+        holidaysByDate.set(holiday.date, []);
+      }
+      holidaysByDate.get(holiday.date)!.push(holiday);
+    });
+
+    const events: EventInput[] = [];
+    
+    holidaysByDate.forEach((dayHolidays: MarketHoliday[], date: string) => {
+      // Consolidate all markets closed on this date
+      const allMarketsSet = new Set<string>();
+      dayHolidays.forEach((h: MarketHoliday) => {
+        h.markets.forEach((m: string) => allMarketsSet.add(m));
+      });
+      const allMarkets = Array.from(allMarketsSet);
+      
+      // Use the first holiday name (typically the main holiday for that day)
+      const primaryHoliday = dayHolidays[0];
+      
+      // Format markets with flags for display
+      const marketsDisplay = allMarkets.map((m: string) => {
+        const info = MARKET_INFO[m as keyof typeof MARKET_INFO];
+        return `${info.flag} ${m}`;
+      }).join(' • ');
+
+      events.push({
+        id: `holiday-${date}`,
+        title: `🏛️ ${primaryHoliday.name}`,
+        start: date,
+        allDay: true,
+        extendedProps: {
+          type: 'holiday',
+          holidayName: primaryHoliday.name,
+          markets: allMarkets,
+          marketsDisplay: marketsDisplay,
+          allHolidays: dayHolidays
+        },
+        backgroundColor: '#1E3A5F',    // Deep blue for holidays
+        borderColor: '#2563EB',         // Brighter blue border
+        display: 'block'
+      });
+    });
+
+    return events;
   }
 
   getColorForTime(time: string | null): string {
@@ -233,9 +307,22 @@ export class CalendarPage implements OnInit, OnDestroy {
   }
 
   renderEventContent(arg: any) {
-    const logoUrl = arg.event.extendedProps.logoUrl;
+    const props = arg.event.extendedProps;
     const title = arg.event.title;
     
+    // Check if this is a holiday event
+    if (props.type === 'holiday') {
+      return { 
+        html: `
+          <div style="display: flex; align-items: center; gap: 4px; font-size: 10px; padding: 2px 4px; line-height: 1.2;">
+            <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500;">${title}</span>
+          </div>
+        ` 
+      };
+    }
+    
+    // Earnings event
+    const logoUrl = props.logoUrl;
     return { 
       html: `
         <div style="display: flex; align-items: center; gap: 4px; font-size: 11px; padding: 2px;">
@@ -253,21 +340,52 @@ export class CalendarPage implements OnInit, OnDestroy {
 
   handleEventClick(info: any) {
     const props = info.event.extendedProps;
+    
+    // Check if this is a holiday event
+    if (props.type === 'holiday') {
+      this.selectedEvent = {
+        type: 'holiday',
+        title: props.holidayName,
+        date: info.event.start,
+        markets: props.markets,
+        marketsDisplay: props.marketsDisplay,
+        allHolidays: props.allHolidays
+      };
+      this.isModalOpen = true;
+      return;
+    }
+    
+    // Earnings event
     this.selectedEvent = {
+      type: 'earnings',
       title: info.event.title,
       symbol: props.symbol,
       date: info.event.start,
       time: props.time,
       timeLabel: props.timeLabel,
+      exactTime: props.exactTime,
       eps: props.eps,
       epsEstimated: props.epsEstimated,
-      berlinTime: this.getBerlinTime(props.time),
+      berlinTime: this.getBerlinTime(props.time, props.exactTime),
+      exactBerlinTime: this.getExactBerlinTime(props.exactTime),
       logoUrl: props.logoUrl
     };
     this.isModalOpen = true;
   }
 
-  getBerlinTime(earningsTime: string | null): string {
+  getMarketInfo(marketCode: string) {
+    return MARKET_INFO[marketCode as keyof typeof MARKET_INFO];
+  }
+
+  getBerlinTime(earningsTime: string | null, exactTime?: string): string {
+    // If we have exact time, convert it to Berlin time
+    if (exactTime) {
+      return this.getExactBerlinTime(exactTime) || this.getApproximateBerlinTime(earningsTime);
+    }
+    return this.getApproximateBerlinTime(earningsTime);
+  }
+
+  getApproximateBerlinTime(earningsTime: string | null): string {
     if (!earningsTime) return 'Time TBD';
     
     switch (earningsTime) {
@@ -280,6 +398,19 @@ export class CalendarPage implements OnInit, OnDestroy {
       default:
         return 'Time TBD';
     }
+  }
+
+  getExactBerlinTime(exactTime: string | null | undefined): string | null {
+    if (!exactTime) return null;
+    
+    // Parse ET time (HH:MM format)
+    const [hours, minutes] = exactTime.split(':').map(Number);
+    
+    // Convert ET to Berlin time (add 6 hours for CET, 5 for CEST during summer)
+    // Using 6 hours as default (CET = ET + 6)
+    const berlinHours = (hours + 6) % 24;
+    
+    return `${String(berlinHours).padStart(2, '0')}:${String(minutes).padStart(2, '0')} CET`;
   }
 
   closeModal() {
