@@ -69,11 +69,7 @@ export class WebPushService {
     return Notification.permission === 'granted';
   }
 
-  /**
-   * Schedule daily notification at specified time
-   */
   async scheduleDailyNotification(time: string): Promise<void> {
-    // Clear existing timer
     if (this.dailyNotificationTimer) {
       clearTimeout(this.dailyNotificationTimer);
     }
@@ -83,7 +79,6 @@ export class WebPushService {
     const scheduledTime = new Date();
     scheduledTime.setHours(hours, minutes, 0, 0);
 
-    // If scheduled time has passed today, schedule for tomorrow
     if (scheduledTime <= now) {
       scheduledTime.setDate(scheduledTime.getDate() + 1);
     }
@@ -92,7 +87,6 @@ export class WebPushService {
 
     this.dailyNotificationTimer = setTimeout(async () => {
       await this.sendDailyEarningsNotification();
-      // Reschedule for next day
       await this.scheduleDailyNotification(time);
     }, timeUntilNotification);
 
@@ -103,49 +97,29 @@ export class WebPushService {
     if (this.dailyNotificationTimer) {
       clearTimeout(this.dailyNotificationTimer);
       this.dailyNotificationTimer = null;
-      console.log('Daily notification cancelled');
     }
   }
 
-  /**
-   * Send daily earnings notification
-   */
   private async sendDailyEarningsNotification(): Promise<void> {
     try {
       const watchlist = await this.storageService.getWatchlist();
       const symbols = watchlist.map(s => s.symbol);
       
-      if (symbols.length === 0) {
-        return;
-      }
+      if (symbols.length === 0) return;
 
       this.earningsService.getTodayEarnings(symbols).subscribe({
         next: async (events) => {
-          if (events.length === 0) {
-            await this.showNotification('No Earnings Today', {
-              body: 'No earnings scheduled for your watchlist today',
-              icon: '/assets/icon/favicon.png',
-              badge: '/assets/icon/favicon.png',
-              tag: 'daily-earnings'
-            });
-          } else {
-            const symbols = events.map(e => e.symbol).slice(0, 5).join(', ');
-            const count = events.length;
-            const body = count > 5 
-              ? `${symbols} and ${count - 5} more`
-              : symbols;
+          const symbols = events.map(e => e.symbol).slice(0, 5).join(', ');
+          const count = events.length;
+          const body = count > 5 ? `${symbols} and ${count - 5} more` : symbols;
 
-            await this.showNotification(`${count} Earnings Today`, {
-              body: body,
-              icon: '/assets/icon/favicon.png',
-              badge: '/assets/icon/favicon.png',
-              tag: 'daily-earnings',
-              requireInteraction: true
-            });
-          }
-        },
-        error: (error) => {
-          console.error('Error fetching today earnings:', error);
+          await this.showNotification(`${count} Earnings Today`, {
+            body: body,
+            icon: '/assets/icon/favicon.png',
+            badge: '/assets/icon/favicon.png',
+            tag: 'daily-earnings',
+            requireInteraction: true
+          });
         }
       });
     } catch (error) {
@@ -153,48 +127,33 @@ export class WebPushService {
     }
   }
 
-  /**
-   * Start background change detection
-   */
   async startChangeDetection(): Promise<void> {
-    // Clear any existing timer
     if (this.changeDetectionTimer) {
       clearInterval(this.changeDetectionTimer);
     }
 
-    // Check immediately on start
     await this.checkForEarningsChanges();
 
-    // Then check every 6 hours
     this.changeDetectionTimer = setInterval(async () => {
       await this.checkForEarningsChanges();
     }, this.CHANGE_DETECTION_INTERVAL);
 
-    console.log('Change detection started (checking every 6 hours)');
+    console.log('Change detection started');
   }
 
-  /**
-   * Stop background change detection
-   */
   stopChangeDetection(): void {
     if (this.changeDetectionTimer) {
       clearInterval(this.changeDetectionTimer);
       this.changeDetectionTimer = null;
-      console.log('Change detection stopped');
     }
   }
 
-  /**
-   * Check for changes in earnings for next 7 days
-   */
   private async checkForEarningsChanges(): Promise<void> {
     try {
       const watchlist = await this.storageService.getWatchlist();
       const symbols = watchlist.map(s => s.symbol);
       
-      if (symbols.length === 0) {
-        return;
-      }
+      if (symbols.length === 0) return;
 
       const today = new Date();
       const sevenDaysLater = new Date();
@@ -206,15 +165,10 @@ export class WebPushService {
           const lastHash = await this.storageService.getLastKnownEarnings();
 
           if (lastHash && lastHash !== currentHash) {
-            // Changes detected!
             await this.sendChangeNotification(events);
           }
 
-          // Save current state
           await this.storageService.saveLastKnownEarnings(currentHash);
-        },
-        error: (error) => {
-          console.error('Error checking for earnings changes:', error);
         }
       });
     } catch (error) {
@@ -222,36 +176,21 @@ export class WebPushService {
     }
   }
 
-  /**
-   * Generate a hash of earnings events for comparison
-   */
   private generateEarningsHash(events: EarningsEvent[]): string {
-    // Sort by date and symbol for consistent hashing
     const sorted = [...events].sort((a, b) => {
       const dateCompare = a.date.localeCompare(b.date);
       if (dateCompare !== 0) return dateCompare;
       return a.symbol.localeCompare(b.symbol);
     });
 
-    // Create a simple hash from key properties
-    const hashData = sorted.map(e => 
-      `${e.symbol}|${e.date}|${e.time || 'null'}`
-    ).join('::');
-
-    return hashData;
+    return sorted.map(e => `${e.symbol}|${e.date}|${e.time || 'null'}`).join('::');
   }
 
-  /**
-   * Send notification about earnings changes
-   */
   private async sendChangeNotification(events: EarningsEvent[]): Promise<void> {
     try {
       const count = events.length;
       const symbols = events.slice(0, 3).map(e => e.symbol).join(', ');
-      
-      const body = count <= 3 
-        ? `Changes detected for ${symbols}`
-        : `Changes detected for ${symbols} and ${count - 3} more`;
+      const body = count <= 3 ? `Changes detected for ${symbols}` : `Changes detected for ${symbols} and ${count - 3} more`;
 
       await this.showNotification('📊 Earnings Calendar Update', {
         body: body,
@@ -260,38 +199,24 @@ export class WebPushService {
         tag: 'earnings-change',
         requireInteraction: true
       });
-
-      console.log('Change notification sent');
     } catch (error) {
       console.error('Error sending change notification:', error);
     }
   }
 
-  /**
-   * Show a notification using Web Notifications API
-   */
   private async showNotification(title: string, options?: NotificationOptions): Promise<void> {
-    if (!this.hasPermission()) {
-      console.warn('No notification permission');
-      return;
-    }
+    if (!this.hasPermission()) return;
 
     try {
-      // Try using service worker first if available
       if ('serviceWorker' in navigator) {
         const registration = await navigator.serviceWorker.getRegistration();
         if (registration) {
           await registration.showNotification(title, options);
-          console.log('Notification sent via service worker');
           return;
         }
       }
       
-      // Fallback to basic Notification API
       const notification = new Notification(title, options);
-      console.log('Notification sent via Notification API');
-      
-      // Auto-close after 5 seconds if requireInteraction is false
       if (!options?.requireInteraction) {
         setTimeout(() => notification.close(), 5000);
       }
@@ -301,9 +226,6 @@ export class WebPushService {
     }
   }
 
-  /**
-   * Test notification
-   */
   async testNotification(): Promise<void> {
     if (!this.isSupported()) {
       throw new Error('Push notifications are not supported in this browser');

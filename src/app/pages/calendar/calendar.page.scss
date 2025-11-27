@@ -196,6 +196,21 @@ ion-content {
         text-decoration: underline;
       }
     }
+
+    // Holiday events specific styling
+    .fc-event[style*="background-color: rgb(30, 58, 95)"],
+    .fc-event[style*="background-color:#1E3A5F"] {
+      background: linear-gradient(135deg, #1E3A5F 0%, #2563EB 100%) !important;
+      border-left: 3px solid #3B82F6 !important;
+      
+      &::before {
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(59, 130, 246, 0.05) 100%) !important;
+      }
+      
+      &:hover {
+        background: linear-gradient(135deg, #1E4A7F 0%, #3B82F6 100%) !important;
+      }
+    }
   }
 }
 
@@ -230,6 +245,22 @@ ion-modal {
   p-text, p-heading {
     display: block;
     padding: 4px 0;
+  }
+
+  // Market list styling for holiday modal
+  .market-list {
+    .market-item {
+      &:last-child {
+        border-bottom: none !important;
+      }
+      
+      &:hover {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+        padding-left: 8px;
+        margin-left: -8px;
+      }
+    }
   }
 }
 

@@ -4,6 +4,7 @@ export interface EarningsEvent {
   logoUrl?: string; // Company logo URL
   date: string; // YYYY-MM-DD
   time: EarningsTime; // 'bmo' | 'amc' | 'dmt' | null
+  exactTime?: string; // HH:MM format (ET timezone)
   eps?: number;
   epsEstimated?: number;
   revenue?: number;
