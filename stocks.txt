@@ -40,6 +40,7 @@ paypal
 philip morris
 qualcomm
 rheinmetall
+robinhood
 sap
 snowflake
 sp500
