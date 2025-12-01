@@ -55,6 +55,7 @@ export const DEFAULT_STOCKS: Stock[] = [
   { symbol: 'PM', name: 'Philip Morris' },
   { symbol: 'QCOM', name: 'Qualcomm' },
   { symbol: 'RHM.DE', name: 'Rheinmetall' },
+  { symbol: 'HOOD', name: 'Robinhood' },
   { symbol: 'SAP', name: 'SAP' },
   { symbol: 'SNOW', name: 'Snowflake' },
   { symbol: '^GSPC', name: 'S&P 500' },
